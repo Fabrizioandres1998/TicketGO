@@ -1,0 +1,48 @@
+# Compilación
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio / VS Code
+.vs/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# Archivos de usuario de Visual Studio
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Logs
+*.log
+
+# Configuración local
+appsettings.Local.json
+appsettings.Development.json
+
+# Archivos temporales
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Rider / JetBrains
+.idea/
+
+# Cobertura de tests
+coverage/
+TestResults/
+
+# NuGet
+*.nupkg
+*.snupkg
+
+# Archivos de respaldo
+*.bak
+*.backup

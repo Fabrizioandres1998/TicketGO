@@ -10,7 +10,7 @@ Roles principales:
 
 - **Administrador:** gestiona usuarios, productores y eventos que requieran intervención administrativa.
 - **Productor:** puede crear y gestionar eventos.
-- **Cliente:** puede comprar, devolver y transferir tickets.
+- **Usuario:** puede comprar, devolver y transferir tickets.
 
 ### RN-02 — Productor verificado
 
@@ -154,6 +154,11 @@ Por defecto, se establece que las transferencias son posibles hasta **24 horas a
 Un ticket puede pertenecer a un único usuario en un momento determinado.
 
 Una transferencia reemplaza al propietario anterior por el nuevo propietario.
+
+### Estado del ticket
+
+Tiene dos estados: Usado y No Usado. Si esta usado no puede ser ni devuelto ni transferido.
+
 
 ---
 
