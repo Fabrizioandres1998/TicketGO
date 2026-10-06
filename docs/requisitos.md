@@ -26,7 +26,7 @@ Los roles iniciales serán:
 
 - Administrador
 - Productor
-- Cliente
+- Usuario
 
 ## RF-04 — Perfil de usuario
 
@@ -198,7 +198,7 @@ Al menos un ABM/CRUD debe implementarse utilizando Vue.js y peticiones AJAX.
 
 Los listados que puedan crecer con el tiempo deben utilizar paginación del lado del servidor.
 
-No se deben recuperar todos los registros para realizar la paginación en el cliente.
+No se deben recuperar todos los registros para realizar la paginación en el Usuario.
 
 ## RT-06 — Búsquedas relacionadas
 

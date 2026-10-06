@@ -155,11 +155,6 @@ Un ticket puede pertenecer a un único usuario en un momento determinado.
 
 Una transferencia reemplaza al propietario anterior por el nuevo propietario.
 
-### Estado del ticket
-
-Tiene dos estados: Usado y No Usado. Si esta usado no puede ser ni devuelto ni transferido.
-
-
 ---
 
 ## 5. Historial
