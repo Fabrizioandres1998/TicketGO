@@ -16,12 +16,12 @@ namespace TicketsGO.Models
         [Required]
         [Display(Name = "Usuario origen")]
         public int IdUsuarioOrigen { get; set; }
-public Usuario? UsuarioOrigen { get; set; }
+        public Usuario? UsuarioOrigen { get; set; }
 
         [Required]
         [Display(Name = "Usuario destino")]
         public int IdUsuarioDestino { get; set; }
-public Usuario? UsuarioDestino { get; set; }
+        public Usuario? UsuarioDestino { get; set; }
 
         [Required]
         [Display(Name = "Fecha")]

@@ -1,6 +1,8 @@
-
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using TicketsGO.Data;
+using TicketsGO.Models;
+using TicketsGO.Services; // Asegúrate de que este sea el namespace de tu clase Usuario
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +18,12 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         )
     )
 );
+
+// REGISTRO SERVICIOS PROPIOS
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+// REGISTRO HASHER
+builder.Services.AddScoped<IPasswordHasher<Usuario>, PasswordHasher<Usuario>>();
+
 
 // 2. BUILD(): construye la aplicación utilizando los servicios registrados.
 var app = builder.Build();
