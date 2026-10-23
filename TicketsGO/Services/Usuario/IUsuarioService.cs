@@ -9,7 +9,7 @@ public interface IUsuarioService
     Task<Usuario?> LoginAsync(string email, string password);
 
     // Consultas
-    Task<IEnumerable<Usuario>> ListAsync();
+    Task<PaginatedResult<Usuario>> ListAsync(int pagina = 1, int cantidadPorPagina = 10);
     Task<Usuario?> GetUsuarioByIdAsync(int id);
     Task<Usuario?> GetUsuarioByEmailAsync(string email);
     Task<bool> ExistsByEmailAsync(string email);

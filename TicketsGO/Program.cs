@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using TicketsGO.Data;
 using TicketsGO.Models;
-using TicketsGO.Services; // Asegúrate de que este sea el namespace de tu clase Usuario
+using TicketsGO.Services; 
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,9 +22,20 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // REGISTRO SERVICIOS PROPIOS
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+
 // REGISTRO HASHER
 builder.Services.AddScoped<IPasswordHasher<Usuario>, PasswordHasher<Usuario>>();
 
+// REGISTRO DE AUTENTICACIÓN POR COOKIES
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Usuario/Login";
+        options.AccessDeniedPath = "/Usuario/Login";
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+    });
+
+builder.Services.AddAuthorization();
 
 // 2. BUILD(): construye la aplicación utilizando los servicios registrados.
 var app = builder.Build();
@@ -43,6 +55,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+// MIDDLEWARES DE SEGURIDAD (Van siempre antes de los endpoints)
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

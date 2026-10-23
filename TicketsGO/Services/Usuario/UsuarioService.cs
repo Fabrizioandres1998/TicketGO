@@ -20,9 +20,26 @@ public class UsuarioService : IUsuarioService
     }
 
     // Trae todos los usuarios.
-    public async Task<IEnumerable<Usuario>> ListAsync()
+    public async Task<PaginatedResult<Usuario>> ListAsync(int pagina = 1, int cantidadPorPagina = 10)
     {
-        return await _context.Usuarios.ToListAsync();
+        // Corta el total de registros en la BD (para saber cuántas páginas hay)
+        var totalRegistros = await _context.Usuarios.CountAsync();
+
+        // Trae solo los registros de la página actual
+        var usuarios = await _context.Usuarios
+            .OrderBy(u => u.Id)
+            .Skip((pagina - 1) * cantidadPorPagina) // Se salta los anteriores
+            .Take(cantidadPorPagina)                // Trae solo los de esta página
+            .ToListAsync();
+
+        // Arma el resultado
+        return new PaginatedResult<Usuario>
+        {
+            Items = usuarios,
+            TotalCount = totalRegistros,
+            PageNumber = pagina,
+            PageSize = cantidadPorPagina
+        };
     }
 
     // Busca un usuario por su ID.
