@@ -24,7 +24,7 @@ public interface IUsuarioService
     // Recuperación y verificación
     Task SolicitarResetPasswordAsync(string email);
     Task ResetPasswordAsync(string token, string passwordNueva);
-    Task VerificarEmailAsync(string token);
+    // Task VerificarEmailAsync(string token);
 
     // Administración
     Task EliminarUsuarioAsync(int id);
