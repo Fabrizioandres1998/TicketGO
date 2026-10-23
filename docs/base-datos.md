@@ -1,3 +1,5 @@
+# Modelo de Base de Datos — Proyecto Eventos
+
 ## Usuario
 
 | Campo                  | Tipo         | PK  | FK  | Nulo |
@@ -13,26 +15,37 @@
 | email_verificado       | boolean      | —   | —   | No   |
 | verification_token     | varchar(255) | —   | —   | Sí   |
 | reset_password_expires | datetime     | —   | —   | Sí   |
+| verificado             | boolean      | —   | —   | No   |
+
+> `rol`: `Usuario` / `Productor` / `Administrador`  
+> `verificado`: solo aplica a `Productor`; en el resto queda `false`.
+
+---
 
 ## Evento
 
-| Campo               | Tipo         | PK  | FK  | Nulo |
-| ------------------- | ------------ | --- | --- | ---- |
-| id_evento           | int          | Sí  | —   | No   |
-| id_usuario          | int          | —   | Sí  | No   |
-| nombre              | varchar(150) | —   | —   | No   |
-| descripcion         | text         | —   | —   | No   |
-| fecha_inicio        | datetime     | —   | —   | No   |
-| fecha_fin           | datetime     | —   | —   | No   |
-| autorizado          | boolean      | —   | —   | No   |
-| provincia           | varchar(100) | —   | —   | No   |
-| ciudad              | varchar(100) | —   | —   | No   |
-| establecimiento     | varchar(150) | —   | —   | No   |
-| privado             | boolean      | —   | —   | No   |
-| tickets_totales     | int          | —   | —   | No   |
-| tickets_disponibles | int          | —   | —   | No   |
-| tickets_vendidos    | int          | —   | —   | No   |
-| estado              | varchar(30)  | —   | —   | No   |
+| Campo            | Tipo          | PK  | FK  | Nulo |
+| ---------------- | ------------- | --- | --- | ---- |
+| id_evento        | int           | Sí  | —   | No   |
+| id_usuario       | int           | —   | Sí  | No   |
+| nombre           | varchar(150)  | —   | —   | No   |
+| descripcion      | text          | —   | —   | No   |
+| fecha_inicio     | datetime      | —   | —   | No   |
+| fecha_fin        | datetime      | —   | —   | No   |
+| autorizado       | boolean       | —   | —   | No   |
+| provincia        | varchar(100)  | —   | —   | No   |
+| ciudad           | varchar(100)  | —   | —   | No   |
+| establecimiento  | varchar(150)  | —   | —   | No   |
+| privado          | boolean       | —   | —   | No   |
+| tickets_totales  | int           | —   | —   | No   |
+| tickets_vendidos | int           | —   | —   | No   |
+| precio_ticket    | decimal(10,2) | —   | —   | No   |
+| estado           | varchar(30)   | —   | —   | No   |
+
+> `estado`: `EnRevision` / `Publicado` / `Cancelado` / `Finalizado`  
+> `tickets_disponibles` se calcula como `tickets_totales - tickets_vendidos` (no se guarda).
+
+---
 
 ## Ticket
 
@@ -45,6 +58,10 @@
 | estado     | varchar(30)  | —   | —   | No   |
 | codigo     | varchar(100) | —   | —   | No   |
 
+> `estado`: `Usado` / `NoUsado`
+
+---
+
 ## Compra
 
 | Campo         | Tipo          | PK  | FK  | Nulo |
@@ -56,6 +73,10 @@
 | monto_total   | decimal(10,2) | —   | —   | No   |
 | estado        | varchar(30)   | —   | —   | No   |
 
+> `estado`: `Realizada` / `Pendiente`
+
+---
+
 ## Historial
 
 | Campo        | Tipo | PK  | FK  | Nulo |
@@ -65,16 +86,19 @@
 | id_usuario   | int  | —   | Sí  | No   |
 | descripcion  | text | —   | —   | No   |
 
+---
+
 ## Transferencia
 
-| Campo              | Tipo     | PK | FK | Nulo |
-| ------------------ | -------- | -- | -- | ---- |
-| id_transferencia   | int      | Sí | —  | No   |
-| id_ticket          | int      | —  | Sí | No   |
-| id_usuario_origen  | int      | —  | Sí | No   |
-| id_usuario_destino | int      | —  | Sí | No   |
-| fecha              | datetime | —  | —  | No   |
+| Campo              | Tipo     | PK  | FK  | Nulo |
+| ------------------ | -------- | --- | --- | ---- |
+| id_transferencia   | int      | Sí  | —   | No   |
+| id_ticket          | int      | —   | Sí  | No   |
+| id_usuario_origen  | int      | —   | Sí  | No   |
+| id_usuario_destino | int      | —   | Sí  | No   |
+| fecha              | datetime | —   | —   | No   |
 
+---
 
 ## Relaciones de claves foráneas
 
@@ -89,3 +113,21 @@
 - `Transferencia.id_ticket` → `Ticket.id_ticket`: cada transferencia corresponde a un ticket.
 - `Transferencia.id_usuario_origen` → `Usuario.id_usuario`: identifica al usuario que transfiere el ticket.
 - `Transferencia.id_usuario_destino` → `Usuario.id_usuario`: identifica al usuario que recibe el ticket.
+
+---
+
+## Correspondencia UML → Base de Datos
+
+| Clase UML     | Tabla           | Cómo se resuelve                         |
+| ------------- | --------------- | ---------------------------------------- |
+| Usuario       | `Usuario`       | Tabla base                               |
+| Productor     | `Usuario`       | `rol = 'Productor'` + campo `verificado` |
+| Administrador | `Usuario`       | `rol = 'Administrador'`                  |
+| Evento        | `Evento`        | —                                        |
+| Ticket        | `Ticket`        | —                                        |
+| Compra        | `Compra`        | —                                        |
+| Historial     | `Historial`     | —                                        |
+| Transferencia | `Transferencia` | —                                        |
+| EstadoEvento  | `Evento.estado` | varchar con valores fijos                |
+| EstadoTicket  | `Ticket.estado` | varchar con valores fijos                |
+| EstadoCompra  | `Compra.estado` | varchar con valores fijos                |

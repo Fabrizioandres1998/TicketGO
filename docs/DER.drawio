@@ -1,0 +1,89 @@
+<mxfile host="Electron">
+  <diagram name="Página-1" id="H7EDBLp7MuHg8ySDCCqw">
+    <mxGraphModel dx="1900" dy="1822" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="ltScE9FXt3n6MqUY2NHW-5" edge="1" parent="1" source="Usuario" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERzeroToMany;endFill=0;startArrow=ERmandOne;startFill=0;entryX=0.011;entryY=0.606;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=0.553;exitDx=0;exitDy=0;exitPerimeter=0;" target="Evento">
+          <mxGeometry relative="1" x="0.169" as="geometry">
+            <Array as="points" />
+            <mxPoint x="280.0000000000002" y="179.9971934358446" as="sourcePoint" />
+            <mxPoint x="479.55999999999995" y="181.77" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ltScE9FXt3n6MqUY2NHW-13" edge="1" parent="1" source="Usuario" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERzeroToMany;endFill=0;startArrow=ERmandOne;startFill=0;entryX=0.41;entryY=0.985;entryDx=0;entryDy=0;entryPerimeter=0;" target="Transferencia">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="170" y="320" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ltScE9FXt3n6MqUY2NHW-16" edge="1" parent="1" source="Usuario" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.25;entryY=0;entryDx=0;entryDy=0;endArrow=ERzeroToMany;endFill=0;startArrow=ERmandOne;startFill=0;" target="Historial">
+          <mxGeometry relative="1" x="0.003" as="geometry">
+            <Array as="points">
+              <mxPoint x="305" y="210" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ltScE9FXt3n6MqUY2NHW-18" edge="1" parent="1" source="Usuario" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=1;exitY=0.25;exitDx=0;exitDy=0;endArrow=ERzeroToMany;endFill=0;startArrow=ERmandOne;startFill=0;" target="Compra">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Usuario" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;div style=&quot;box-sizing: border-box; width: 100%; background: rgb(228, 228, 228); padding: 2px;&quot;&gt;Usuario&lt;table cellpadding=&quot;2&quot; cellspacing=&quot;0&quot; style=&quot;background-color: transparent; font-size: 1em; width: 100%;&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;PK&lt;/td&gt;&lt;td&gt;id_usuario INT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;nombre VARCHAR(100)&lt;br&gt;apellido VARCHAR(100)&lt;br&gt;email VARCHAR(150)&lt;br&gt;password VARCHAR(255)&lt;br&gt;rol VARCHAR(30)&lt;br&gt;estado BOOLEAN&lt;br&gt;telefono VARCHAR(30)&lt;br&gt;email_verificado BOOLEAN&lt;br&gt;verification_token VARCHAR(255)&lt;br&gt;reset_password_expires DATETIME&lt;br&gt;verificado BOOLEAN&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="220" width="220" x="20" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="ltScE9FXt3n6MqUY2NHW-7" edge="1" parent="1" source="Evento" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.637;entryY=1.009;entryDx=0;entryDy=0;endArrow=ERzeroToMany;endFill=0;startArrow=ERmandOne;startFill=0;entryPerimeter=0;" target="Compra">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="300.1" y="160" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ltScE9FXt3n6MqUY2NHW-8" edge="1" parent="1" source="Evento" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERoneToMany;endFill=0;startArrow=ERmandOne;startFill=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="Ticket">
+          <mxGeometry relative="1" x="0.0365" as="geometry">
+            <Array as="points">
+              <mxPoint x="410" y="140" />
+              <mxPoint x="410" y="-187.5" />
+            </Array>
+            <mxPoint x="300" y="-190" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Evento" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;div style=&quot;box-sizing: border-box; width: 100%; background: rgb(228, 228, 228); padding: 2px;&quot;&gt;Evento&lt;table cellpadding=&quot;2&quot; cellspacing=&quot;0&quot; style=&quot;background-color: transparent; font-size: 1em; width: 100%;&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;PK&lt;/td&gt;&lt;td&gt;id_evento INT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;FK1&lt;/td&gt;&lt;td&gt;id_usuario INT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;nombre VARCHAR(150)&lt;br&gt;descripcion TEXT&lt;br&gt;fecha_inicio DATETIME&lt;br&gt;fecha_fin DATETIME&lt;br&gt;autorizado BOOLEAN&lt;br&gt;provincia VARCHAR(100)&lt;br&gt;ciudad VARCHAR(100)&lt;br&gt;establecimiento VARCHAR(150)&lt;br&gt;privado BOOLEAN&lt;br&gt;tickets_totales INT&lt;br&gt;tickets_vendidos INT&lt;br&gt;precio_ticket DECIMAL(10,2)&lt;br&gt;estado VARCHAR(30)&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="250" width="220" x="470" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="ltScE9FXt3n6MqUY2NHW-14" edge="1" parent="1" source="Ticket" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;endArrow=ERzeroToMany;endFill=0;startArrow=ERmandOne;startFill=0;" target="Transferencia">
+          <mxGeometry relative="1" x="-0.1143" as="geometry" />
+        </mxCell>
+        <mxCell id="Ticket" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;div style=&quot;box-sizing: border-box; width: 100%; background: rgb(228, 228, 228); padding: 2px;&quot;&gt;Ticket&lt;table cellpadding=&quot;2&quot; cellspacing=&quot;0&quot; style=&quot;background-color: transparent; font-size: 1em; width: 100%;&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;PK&lt;/td&gt;&lt;td&gt;id_ticket INT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;FK1&lt;/td&gt;&lt;td&gt;id_evento INT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;FK2&lt;/td&gt;&lt;td&gt;id_compra INT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;FK3&lt;/td&gt;&lt;td&gt;id_usuario INT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;estado VARCHAR(30)&lt;br&gt;codigo VARCHAR(100)&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="125" width="220" x="70" y="-249" as="geometry" />
+        </mxCell>
+        <mxCell id="ltScE9FXt3n6MqUY2NHW-11" edge="1" parent="1" source="Compra" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERoneToMany;endFill=0;startArrow=ERmandOne;startFill=0;" target="Ticket" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Compra" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;div style=&quot;box-sizing: border-box; width: 100%; background: rgb(228, 228, 228); padding: 2px;&quot;&gt;Compra&lt;table cellpadding=&quot;2&quot; cellspacing=&quot;0&quot; style=&quot;background-color: transparent; font-size: 1em; width: 100%;&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;PK&lt;/td&gt;&lt;td&gt;id_compra INT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;FK1&lt;/td&gt;&lt;td&gt;id_evento INT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;FK2&lt;/td&gt;&lt;td&gt;id_usuario INT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;total_tickets INT&lt;br&gt;monto_total DECIMAL(10,2)&lt;br&gt;estado VARCHAR(30)&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="220" x="160" y="-92" as="geometry" />
+        </mxCell>
+        <mxCell id="Historial" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;div style=&quot;box-sizing: border-box; width: 100%; background: rgb(228, 228, 228); padding: 2px;&quot;&gt;Historial&lt;table cellpadding=&quot;2&quot; cellspacing=&quot;0&quot; style=&quot;background-color: transparent; font-size: 1em; width: 100%;&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;PK&lt;/td&gt;&lt;td&gt;id_historial INT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;FK1&lt;/td&gt;&lt;td&gt;id_evento INT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;FK2&lt;/td&gt;&lt;td&gt;id_usuario INT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;descripcion TEXT&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="90" width="220" x="250" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="Transferencia" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;div style=&quot;box-sizing: border-box; width: 100%; background: rgb(228, 228, 228); padding: 2px;&quot;&gt;Transferencia&lt;table cellpadding=&quot;2&quot; cellspacing=&quot;0&quot; style=&quot;background-color: transparent; font-size: 1em; width: 100%;&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;PK&lt;/td&gt;&lt;td&gt;id_transferencia INT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;FK1&lt;/td&gt;&lt;td&gt;id_ticket INT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;FK2&lt;/td&gt;&lt;td&gt;id_usuario_origen INT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;FK3&lt;/td&gt;&lt;td&gt;id_usuario_destino INT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;fecha DATETIME&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="220" x="-220" y="-80" as="geometry" />
+        </mxCell>
+        <mxCell id="ltScE9FXt3n6MqUY2NHW-6" edge="1" parent="1" source="Usuario" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.25;entryY=1;entryDx=0;entryDy=0;endArrow=ERzeroToMany;endFill=0;startArrow=ERmandOne;startFill=0;exitX=0.468;exitY=0.012;exitDx=0;exitDy=0;exitPerimeter=0;" target="Ticket">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="119" y="60" as="sourcePoint" />
+            <mxPoint x="119" y="-125" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ltScE9FXt3n6MqUY2NHW-12" edge="1" parent="1" source="Usuario" style="rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERzeroToMany;endFill=0;startArrow=ERmandOne;startFill=0;exitX=0;exitY=0.25;exitDx=0;exitDy=0;edgeStyle=orthogonalEdgeStyle;entryX=0.583;entryY=0.964;entryDx=0;entryDy=0;entryPerimeter=0;" target="Transferencia">
+          <mxGeometry relative="1" x="-0.0822" as="geometry">
+            <mxPoint x="-90" y="30" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ltScE9FXt3n6MqUY2NHW-15" edge="1" parent="1" source="Evento" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERzeroToMany;endFill=0;startArrow=ERmandOne;startFill=0;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=0.647;entryY=-0.006;entryDx=0;entryDy=0;entryPerimeter=0;" target="Historial">
+          <mxGeometry relative="1" x="0.4002" as="geometry">
+            <mxPoint x="423.7" y="217.5" as="sourcePoint" />
+            <mxPoint x="390" y="290" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
