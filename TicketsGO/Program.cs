@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using TicketsGO.Data;
 using TicketsGO.Models;
-using TicketsGO.Services; 
+using TicketsGO.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

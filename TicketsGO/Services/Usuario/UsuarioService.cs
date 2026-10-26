@@ -22,17 +22,14 @@ public class UsuarioService : IUsuarioService
     // Trae todos los usuarios.
     public async Task<PaginatedResult<Usuario>> ListAsync(int pagina = 1, int cantidadPorPagina = 10)
     {
-        // Corta el total de registros en la BD (para saber cuántas páginas hay)
         var totalRegistros = await _context.Usuarios.CountAsync();
 
-        // Trae solo los registros de la página actual
         var usuarios = await _context.Usuarios
             .OrderBy(u => u.Id)
-            .Skip((pagina - 1) * cantidadPorPagina) // Se salta los anteriores
-            .Take(cantidadPorPagina)                // Trae solo los de esta página
+            .Skip((pagina - 1) * cantidadPorPagina)
+            .Take(cantidadPorPagina)
             .ToListAsync();
 
-        // Arma el resultado
         return new PaginatedResult<Usuario>
         {
             Items = usuarios,
@@ -170,7 +167,7 @@ public class UsuarioService : IUsuarioService
 
         await _context.SaveChangesAsync();
 
-        _logger.LogInformation("Token de reseteo generado para {Email}. Token: {Token}", email, token);
+        _logger.LogInformation("Token de reseteo generado para {Email} Enlace: http://localhost:5062/Usuario/ResetPassword?token={Token}", email, token);
     }
 
     // Valida el token y cambia la contraseña.

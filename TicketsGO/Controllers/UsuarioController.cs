@@ -1,35 +1,34 @@
-using TicketsGO.Models;
-using System.Linq;
-using TicketsGO.DTOs;
-using TicketsGO.Services;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using TicketsGO.DTOs;
+using TicketsGO.Models;
+using TicketsGO.Services;
 
 namespace TicketsGO.Controllers;
 
 public class UsuarioController : Controller
 {
     private readonly ILogger<UsuarioController> _logger;
-    private readonly UsuarioService _UsuarioService;
+    private readonly IUsuarioService _usuarioService;
 
-    public UsuarioController(ILogger<UsuarioController> logger, UsuarioService usuarioService)
+    public UsuarioController(ILogger<UsuarioController> logger, IUsuarioService usuarioService)
     {
         _logger = logger;
-        _UsuarioService = usuarioService;
+        _usuarioService = usuarioService;
     }
 
-    // --- LISTADOS Y DETALLES (Requieren estar logueado) ---
+    // --- LISTADOS Y DETALLES ---
 
-    [Authorize]
+    [Authorize(Roles = "Administrador")]
     public async Task<IActionResult> Index(int pagina = 1)
     {
-        var resultadoPaginado = await _UsuarioService.ListAsync(pagina);
+        var resultadoPaginado = await _usuarioService.ListAsync(pagina);
 
-        var usuariosDTO = resultadoPaginado.Items.Select(u => new UsuarioListDTO
+        var usuariosDto = resultadoPaginado.Items.Select(u => new UsuarioListDTO
         {
             Id = u.Id,
             NombreCompleto = $"{u.Nombre} {u.Apellido}",
@@ -38,24 +37,30 @@ public class UsuarioController : Controller
             EstadoTexto = u.Estado ? "Activo" : "Suspendido"
         }).ToList();
 
-        var resultadoDTO = new PaginatedResult<UsuarioListDTO>
+        var resultadoDto = new PaginatedResult<UsuarioListDTO>
         {
-            Items = usuariosDTO,
+            Items = usuariosDto,
             TotalCount = resultadoPaginado.TotalCount,
             PageNumber = resultadoPaginado.PageNumber,
             PageSize = resultadoPaginado.PageSize
         };
 
-        return View(resultadoDTO);
+        return View(resultadoDto);
     }
 
     [Authorize]
     public async Task<IActionResult> Details(int id)
     {
-        var usuario = await _UsuarioService.GetUsuarioByIdAsync(id);
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        // Si no es admin y no es su propio id, lo mandamos a su perfil
+        if (!User.IsInRole("Administrador") && id != userId)
+            return RedirectToAction(nameof(MyDetails));
+
+        var usuario = await _usuarioService.GetUsuarioByIdAsync(id);
         if (usuario == null) return NotFound();
 
-        var usuarioDTO = new UsuarioDetailsDTO
+        var usuarioDto = new UsuarioDetailsDTO
         {
             Id = usuario.Id,
             NombreCompleto = $"{usuario.Nombre} {usuario.Apellido}",
@@ -65,7 +70,7 @@ public class UsuarioController : Controller
             Estado = usuario.Estado
         };
 
-        return View(usuarioDTO);
+        return View(usuarioDto);
     }
 
     // --- CREAR (Solo Administradores) ---
@@ -93,11 +98,11 @@ public class UsuarioController : Controller
                 Email = dto.Email,
                 Telefono = dto.Telefono,
                 Password = dto.Password,
-                Rol = RolUsuario.Usuario, // Por defecto se crean como Usuario
-                Estado = true
+                Rol = dto.Rol,
+                Estado = dto.Estado
             };
 
-            await _UsuarioService.RegisterAsync(usuario);
+            await _usuarioService.RegisterAsync(usuario);
             return RedirectToAction(nameof(Index));
         }
         catch (Exception ex)
@@ -107,16 +112,59 @@ public class UsuarioController : Controller
         }
     }
 
-    // --- EDITAR (Solo Administradores) ---
+    // --- REGISTRO PÚBLICO ---
 
-    [Authorize(Roles = "Administrador")]
+    [AllowAnonymous]
     [HttpGet]
-    public async Task<IActionResult> Edit(int id)
+    public IActionResult Register()
     {
-        var usuario = await _UsuarioService.GetUsuarioByIdAsync(id);
+        if (User.Identity?.IsAuthenticated == true)
+            return RedirectToAction(nameof(MyDetails));
+
+        return View(new UsuarioRegisterDto());
+    }
+
+    [AllowAnonymous]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Register(UsuarioRegisterDto dto)
+    {
+        if (!ModelState.IsValid) return View(dto);
+
+        try
+        {
+            var usuario = new Usuario
+            {
+                Nombre = dto.Nombre,
+                Apellido = dto.Apellido,
+                Email = dto.Email,
+                Telefono = dto.Telefono,
+                Password = dto.Password,
+                Rol = RolUsuario.Usuario,
+                Estado = true
+            };
+
+            await _usuarioService.RegisterAsync(usuario);
+            return RedirectToAction(nameof(Login));
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError("", ex.Message);
+            return View(dto);
+        }
+    }
+
+    // --- PERFIL PROPIO ---
+
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> Profile()
+    {
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var usuario = await _usuarioService.GetUsuarioByIdAsync(userId);
         if (usuario == null) return NotFound();
 
-        var usuarioDTO = new UsuarioEditDTO
+        var dto = new UsuarioEditDTO
         {
             Id = usuario.Id,
             Nombre = usuario.Nombre!,
@@ -124,13 +172,113 @@ public class UsuarioController : Controller
             Telefono = usuario.Telefono
         };
 
-        return View(usuarioDTO);
+        return View(dto);
+    }
+
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Profile(UsuarioEditDTO dto)
+    {
+        if (!ModelState.IsValid) return View(dto);
+
+        try
+        {
+            var usuario = new Usuario
+            {
+                Id = dto.Id,
+                Nombre = dto.Nombre,
+                Apellido = dto.Apellido,
+                Telefono = dto.Telefono
+            };
+
+            await _usuarioService.ModificarUsuarioAsync(usuario);
+            return RedirectToAction(nameof(MyDetails));
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError("", ex.Message);
+            return View(dto);
+        }
+    }
+
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> MyDetails()
+    {
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var usuario = await _usuarioService.GetUsuarioByIdAsync(userId);
+        if (usuario == null) return NotFound();
+
+        var usuarioDto = new UsuarioDetailsDTO
+        {
+            Id = usuario.Id,
+            NombreCompleto = $"{usuario.Nombre} {usuario.Apellido}",
+            Email = usuario.Email!,
+            Telefono = usuario.Telefono,
+            Rol = usuario.Rol.ToString(),
+            Estado = usuario.Estado
+        };
+
+        return View(usuarioDto);
+    }
+
+    // --- CAMBIO DE CONTRASEÑA (Usuario logueado) ---
+
+    [Authorize]
+    [HttpGet]
+    public IActionResult ChangePassword()
+    {
+        return View(new UsuarioChangePasswordDto());
+    }
+
+    [Authorize]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ChangePassword(UsuarioChangePasswordDto dto)
+    {
+        if (!ModelState.IsValid) return View(dto);
+
+        try
+        {
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            await _usuarioService.CambiarPasswordAsync(userId, dto.CurrentPassword, dto.NewPassword);
+            TempData["Success"] = "Contraseña actualizada correctamente.";
+            return RedirectToAction(nameof(MyDetails));
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError("", ex.Message);
+            return View(dto);
+        }
+    }
+
+    // --- EDITAR USUARIO (Solo Administradores) ---
+
+    [Authorize(Roles = "Administrador")]
+    [HttpGet]
+    public async Task<IActionResult> Edit(int id)
+    {
+        var usuario = await _usuarioService.GetUsuarioByIdAsync(id);
+        if (usuario == null) return NotFound();
+
+        var dto = new UsuarioAdminEditDTO
+        {
+            Id = usuario.Id,
+            Nombre = usuario.Nombre!,
+            Apellido = usuario.Apellido!,
+            Telefono = usuario.Telefono,
+            Rol = usuario.Rol,
+            Estado = usuario.Estado
+        };
+
+        return View(dto);
     }
 
     [Authorize(Roles = "Administrador")]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, UsuarioEditDTO dto)
+    public async Task<IActionResult> Edit(int id, UsuarioAdminEditDTO dto)
     {
         if (id != dto.Id) return BadRequest();
         if (!ModelState.IsValid) return View(dto);
@@ -145,7 +293,14 @@ public class UsuarioController : Controller
                 Telefono = dto.Telefono
             };
 
-            await _UsuarioService.ModificarUsuarioAsync(usuario);
+            await _usuarioService.ModificarUsuarioAsync(usuario);
+            await _usuarioService.CambiarRolAsync(dto.Id, dto.Rol,
+                int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!));
+
+            if (!dto.Estado)
+                await _usuarioService.SuspenderUsuarioAsync(dto.Id,
+                    int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!));
+
             return RedirectToAction(nameof(Index));
         }
         catch (Exception ex)
@@ -155,23 +310,23 @@ public class UsuarioController : Controller
         }
     }
 
-    // --- ELIMINAR (Solo Administradores) ---
+    // --- ELIMINAR / SUSPENDER (Solo Administradores) ---
 
     [Authorize(Roles = "Administrador")]
     [HttpGet]
     public async Task<IActionResult> Delete(int id)
     {
-        var usuario = await _UsuarioService.GetUsuarioByIdAsync(id);
+        var usuario = await _usuarioService.GetUsuarioByIdAsync(id);
         if (usuario == null) return NotFound();
 
-        var usuarioDTO = new UsuarioDeleteDTO
+        var usuarioDto = new UsuarioDeleteDTO
         {
             Id = usuario.Id,
             NombreCompleto = $"{usuario.Nombre} {usuario.Apellido}",
             Email = usuario.Email!
         };
 
-        return View(usuarioDTO);
+        return View(usuarioDto);
     }
 
     [Authorize(Roles = "Administrador")]
@@ -181,10 +336,9 @@ public class UsuarioController : Controller
     {
         try
         {
-            // Usamos el ID del admin logueado para la validación del servicio
             var adminId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-
-            await _UsuarioService.SuspenderUsuarioAsync(id, adminId);
+            await _usuarioService.SuspenderUsuarioAsync(id, adminId);
+            TempData["Success"] = "Usuario suspendido correctamente.";
             return RedirectToAction(nameof(Index));
         }
         catch (Exception ex)
@@ -194,7 +348,7 @@ public class UsuarioController : Controller
         }
     }
 
-    // --- ACCIONES DE ADMINISTRADOR (Suspender, Reactivar, Cambiar Rol) ---
+    // --- ACCIONES DE ADMINISTRADOR ---
 
     [Authorize(Roles = "Administrador")]
     [HttpPost]
@@ -203,7 +357,8 @@ public class UsuarioController : Controller
     {
         try
         {
-            await _UsuarioService.ReactivarUsuarioAsync(id);
+            await _usuarioService.ReactivarUsuarioAsync(id);
+            TempData["Success"] = "Usuario reactivado correctamente.";
             return RedirectToAction(nameof(Index));
         }
         catch (Exception ex)
@@ -221,7 +376,8 @@ public class UsuarioController : Controller
         try
         {
             var adminId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            await _UsuarioService.CambiarRolAsync(id, nuevoRol, adminId);
+            await _usuarioService.CambiarRolAsync(id, nuevoRol, adminId);
+            TempData["Success"] = "Rol actualizado correctamente.";
             return RedirectToAction(nameof(Index));
         }
         catch (Exception ex)
@@ -231,12 +387,15 @@ public class UsuarioController : Controller
         }
     }
 
-    // --- LOGIN / LOGOUT (Público) ---
+    // --- LOGIN / LOGOUT ---
 
     [AllowAnonymous]
     [HttpGet]
     public IActionResult Login()
     {
+        if (User.Identity?.IsAuthenticated == true)
+            return RedirectToAction(nameof(MyDetails));
+
         return View();
     }
 
@@ -253,29 +412,33 @@ public class UsuarioController : Controller
 
         try
         {
-            var usuario = await _UsuarioService.LoginAsync(email, password);
+            var usuario = await _usuarioService.LoginAsync(email, password);
 
-            // Creamos los Claims (datos del usuario para la sesión)
             var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, usuario!.Id.ToString()),
-                new Claim(ClaimTypes.Name, usuario.Email!),
-                new Claim(ClaimTypes.Role, usuario.Rol.ToString())
-            };
-
+                {
+                    new Claim(ClaimTypes.NameIdentifier, usuario!.Id.ToString()),
+                    new Claim(ClaimTypes.Name, usuario.Email!),
+                    new Claim(ClaimTypes.Role, usuario.Rol.ToString()),
+                    new Claim("NombreCompleto", $"{usuario.Nombre} {usuario.Apellido}")
+                };
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                new ClaimsPrincipal(claimsIdentity));
 
-            return RedirectToAction("Index", "Home");
+            if (usuario.Rol == RolUsuario.Administrador)
+                return RedirectToAction(nameof(Index));
+
+            return RedirectToAction(nameof(MyDetails));
         }
         catch (UnauthorizedAccessException ex)
         {
-            ModelState.AddModelError("", ex.Message); // Cuenta suspendida
+            ModelState.AddModelError("", ex.Message);
             return View();
         }
         catch (Exception ex)
         {
-            ModelState.AddModelError("", ex.Message); // Credenciales inválidas
+            ModelState.AddModelError("", ex.Message);
             return View();
         }
     }
@@ -287,5 +450,67 @@ public class UsuarioController : Controller
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return RedirectToAction("Index", "Home");
+    }
+
+    // --- RECUPERACIÓN DE CONTRASEÑA ---
+
+    [AllowAnonymous]
+    [HttpGet]
+    public IActionResult ForgotPassword()
+    {
+        if (User.Identity?.IsAuthenticated == true)
+            return RedirectToAction(nameof(MyDetails));
+
+        return View(new ForgotPasswordDto());
+    }
+
+    [AllowAnonymous]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ForgotPassword(ForgotPasswordDto dto)
+    {
+        if (!ModelState.IsValid) return View(dto);
+
+        try
+        {
+            await _usuarioService.SolicitarResetPasswordAsync(dto.Email);
+            TempData["Success"] = "Si el email está registrado, se generó un token. Revisá la consola del servidor.";
+            return RedirectToAction(nameof(ForgotPassword));
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError("", ex.Message);
+            return View(dto);
+        }
+    }
+
+    [AllowAnonymous]
+    [HttpGet]
+    public IActionResult ResetPassword(string token)
+    {
+        if (string.IsNullOrWhiteSpace(token))
+            return RedirectToAction(nameof(Login));
+
+        return View(new ResetPasswordDto { Token = token });
+    }
+
+    [AllowAnonymous]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ResetPassword(ResetPasswordDto dto)
+    {
+        if (!ModelState.IsValid) return View(dto);
+
+        try
+        {
+            await _usuarioService.ResetPasswordAsync(dto.Token, dto.NewPassword);
+            TempData["Success"] = "Contraseña actualizada. Ya podés iniciar sesión.";
+            return RedirectToAction(nameof(Login));
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError("", ex.Message);
+            return View(dto);
+        }
     }
 }

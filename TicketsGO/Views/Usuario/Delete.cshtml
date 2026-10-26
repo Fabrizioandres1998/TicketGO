@@ -1,0 +1,46 @@
+@model TicketsGO.DTOs.UsuarioDeleteDTO
+
+@{
+    ViewData["Title"] = "Suspender usuario";
+}
+
+<div class="container py-5 bg-dark text-light min-vh-100">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card bg-black border-secondary shadow-lg rounded-4">
+                <div class="card-body p-4 p-md-5">
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h1 class="h3 fw-bold mb-0">Suspender usuario</h1>
+                        <a asp-action="Index" class="btn btn-outline-light btn-sm">Volver</a>
+                    </div>
+
+                    <div class="alert alert-danger bg-danger text-light border-0 rounded-3">
+                        ¿Seguro que querés suspender a este usuario? No se elimina el registro, solo se desactiva.
+                    </div>
+
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4 text-secondary">ID</dt>
+                        <dd class="col-sm-8">@Model.Id</dd>
+
+                        <dt class="col-sm-4 text-secondary">Nombre completo</dt>
+                        <dd class="col-sm-8">@Model.NombreCompleto</dd>
+
+                        <dt class="col-sm-4 text-secondary">Email</dt>
+                        <dd class="col-sm-8">@Model.Email</dd>
+                    </dl>
+
+                    <form asp-action="Delete" method="post" class="mt-4">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="Id" />
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-danger btn-lg flex-grow-1 fw-bold">Sí,
+                                suspender</button>
+                                <a asp-action="Index" class="btn btn-outline-secondary btn-lg">Cancelar</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

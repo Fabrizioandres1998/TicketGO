@@ -1,0 +1,56 @@
+@model TicketsGO.DTOs.UsuarioDetailsDTO
+
+@{
+    ViewData["Title"] = "Detalle de usuario";
+}
+
+<div class="container py-5 bg-dark text-light min-vh-100">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card bg-black border-secondary shadow-lg rounded-4">
+                <div class="card-body p-4 p-md-5">
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h1 class="h3 fw-bold mb-0">Detalle de usuario</h1>
+                        <a asp-action="Index" class="btn btn-outline-light btn-sm">Volver</a>
+                    </div>
+
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4 text-secondary">ID</dt>
+                        <dd class="col-sm-8">@Model.Id</dd>
+
+                        <dt class="col-sm-4 text-secondary">Nombre completo</dt>
+                        <dd class="col-sm-8">@Model.NombreCompleto</dd>
+
+                        <dt class="col-sm-4 text-secondary">Email</dt>
+                        <dd class="col-sm-8">@Model.Email</dd>
+
+                        <dt class="col-sm-4 text-secondary">Teléfono</dt>
+                        <dd class="col-sm-8">@(string.IsNullOrWhiteSpace(Model.Telefono) ? "—" : Model.Telefono)</dd>
+
+                        <dt class="col-sm-4 text-secondary">Rol</dt>
+                        <dd class="col-sm-8">@Model.Rol</dd>
+
+                        <dt class="col-sm-4 text-secondary">Estado</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.Estado)
+                            {
+                                <span class="badge bg-success">Activo</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Suspendido</span>
+                            }
+                        </dd>
+                    </dl>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <a asp-action="Edit" asp-route-id="@Model.Id"
+                            class="btn btn-outline-warning btn-lg fw-bold">Editar</a>
+                        <a asp-action="Index" class="btn btn-outline-secondary btn-lg">Cancelar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,52 @@
+@{
+    ViewData["Title"] = "Iniciar sesión";
+}
+
+<div class="container py-5 bg-dark text-light min-vh-100 d-flex align-items-center justify-content-center">
+    <div class="row justify-content-center w-100">
+        <div class="col-md-6 col-lg-4">
+            <!-- Cambiamos a bg-black y agregamos un borde un poco más visible -->
+            <div class="card bg-black border-secondary shadow-lg rounded-4">
+                <div class="card-body p-4 p-md-5">
+                    
+                    <div class="text-center mb-4">
+                        <h2 class="h3 fw-bold">Bienvenido</h2>
+                        <p class="text-white-50 mb-0">Ingresá a tu cuenta para continuar</p>
+                    </div>
+
+                    <form asp-action="Login" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Correo electrónico</label>
+                            <!-- Los inputs los dejo en bg-dark para que se diferencien del fondo negro de la tarjeta -->
+                            <input type="email" name="email" id="email"
+                                   class="form-control bg-dark text-light border-secondary" placeholder="tu@email.com"
+                                   required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Contraseña</label>
+                            <input type="password" name="password" id="password"
+                                   class="form-control bg-dark text-light border-secondary" placeholder="••••••••"
+                                   required />
+                        </div>
+
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-success btn-lg fw-bold">Entrar</button>
+                        </div>
+                    </form>
+
+                    <div class="mt-4 text-center">
+                        <a asp-controller="Usuario" asp-action="Register"
+                           class="text-info text-decoration-none d-block mb-2">¿No tenés cuenta? Crear una</a>
+                        <a asp-action="ForgotPassword" class="text-warning">Olvidé mi contraseña</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
