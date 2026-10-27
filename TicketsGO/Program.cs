@@ -23,6 +23,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // REGISTRO SERVICIOS PROPIOS
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddScoped<IEventoService, EventoService>();
 
 // REGISTRO HASHER
 builder.Services.AddScoped<IPasswordHasher<Usuario>, PasswordHasher<Usuario>>();

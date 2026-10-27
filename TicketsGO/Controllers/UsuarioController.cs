@@ -14,7 +14,6 @@ public class UsuarioController : Controller
 {
     private readonly ILogger<UsuarioController> _logger;
     private readonly IUsuarioService _usuarioService;
-
     private readonly IFileService _fileService;
 
     public UsuarioController(ILogger<UsuarioController> logger, IUsuarioService usuarioService, IFileService fileService)
@@ -56,7 +55,6 @@ public class UsuarioController : Controller
     {
         var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-        // Si no es admin y no es su propio id, lo mandamos a su perfil
         if (!User.IsInRole("Administrador") && id != userId)
             return RedirectToAction(nameof(MyDetails));
 
@@ -123,7 +121,7 @@ public class UsuarioController : Controller
     public IActionResult Register()
     {
         if (User.Identity?.IsAuthenticated == true)
-            return RedirectToAction(nameof(MyDetails));
+            return RedirectToAction("Index", "Home");
 
         return View(new UsuarioRegisterDto());
     }
@@ -135,6 +133,12 @@ public class UsuarioController : Controller
     {
         if (!ModelState.IsValid) return View(dto);
 
+        if (dto.Rol == RolUsuario.Administrador)
+        {
+            ModelState.AddModelError("Rol", "No podés registrarte como administrador.");
+            return View(dto);
+        }
+
         try
         {
             var usuario = new Usuario
@@ -144,7 +148,7 @@ public class UsuarioController : Controller
                 Email = dto.Email,
                 Telefono = dto.Telefono,
                 Password = dto.Password,
-                Rol = RolUsuario.Usuario,
+                Rol = dto.Rol,
                 Estado = true
             };
 
@@ -192,7 +196,6 @@ public class UsuarioController : Controller
             var usuarioDb = await _usuarioService.GetUsuarioByIdAsync(dto.Id);
             if (usuarioDb == null) return NotFound();
 
-            // Si subió un avatar nuevo, guardarlo y borrar el anterior
             if (dto.Avatar != null && dto.Avatar.Length > 0)
             {
                 var nuevoAvatar = await _fileService.SaveAvatarAsync(dto.Avatar);
@@ -235,13 +238,13 @@ public class UsuarioController : Controller
             Telefono = usuario.Telefono,
             Rol = usuario.Rol.ToString(),
             Estado = usuario.Estado,
-            AvatarUrl = usuario.AvatarUrl 
+            AvatarUrl = usuario.AvatarUrl
         };
 
         return View(usuarioDto);
     }
 
-    // --- CAMBIO DE CONTRASEÑA (Usuario logueado) ---
+    // --- CAMBIO DE CONTRASEÑA ---
 
     [Authorize]
     [HttpGet]
@@ -412,7 +415,7 @@ public class UsuarioController : Controller
     public IActionResult Login()
     {
         if (User.Identity?.IsAuthenticated == true)
-            return RedirectToAction(nameof(MyDetails));
+            return RedirectToAction("Index", "Home");
 
         return View();
     }
@@ -433,22 +436,21 @@ public class UsuarioController : Controller
             var usuario = await _usuarioService.LoginAsync(email, password);
 
             var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.NameIdentifier, usuario!.Id.ToString()),
-                    new Claim(ClaimTypes.Name, usuario.Email!),
-                    new Claim(ClaimTypes.Role, usuario.Rol.ToString()),
-                    new Claim("NombreCompleto", $"{usuario.Nombre} {usuario.Apellido}"),
-                    new Claim("AvatarUrl", usuario.AvatarUrl ?? "")
-                };
+            {
+                new Claim(ClaimTypes.NameIdentifier, usuario!.Id.ToString()),
+                new Claim(ClaimTypes.Name, usuario.Email!),
+                new Claim(ClaimTypes.Role, usuario.Rol.ToString()),
+                new Claim("NombreCompleto", $"{usuario.Nombre} {usuario.Apellido}"),
+                new Claim("AvatarUrl", usuario.AvatarUrl ?? "")
+            };
+
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 new ClaimsPrincipal(claimsIdentity));
 
-            if (usuario.Rol == RolUsuario.Administrador)
-                return RedirectToAction(nameof(Index));
-
-            return RedirectToAction(nameof(MyDetails));
+            // Todos van al Home (listado de eventos)
+            return RedirectToAction("Index", "Home");
         }
         catch (UnauthorizedAccessException ex)
         {
@@ -478,7 +480,7 @@ public class UsuarioController : Controller
     public IActionResult ForgotPassword()
     {
         if (User.Identity?.IsAuthenticated == true)
-            return RedirectToAction(nameof(MyDetails));
+            return RedirectToAction("Index", "Home");
 
         return View(new ForgotPasswordDto());
     }

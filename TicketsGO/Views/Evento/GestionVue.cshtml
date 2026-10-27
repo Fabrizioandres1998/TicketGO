@@ -1,0 +1,277 @@
+@{
+    ViewData["Title"] = "Gestionar eventos (Vue)";
+}
+
+<div id="app" class="container py-5 bg-dark text-light min-vh-100">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 fw-bold mb-0">Gestionar eventos</h1>
+        <button class="btn btn-success" v-on:click="abrirCrear">+ Nuevo evento</button>
+    </div>
+
+    <div v-if="mensaje" :class="'alert ' + (error ? 'alert-danger' : 'alert-success')">{{ mensaje }}</div>
+
+    <div v-if="cargando" class="text-center">Cargando...</div>
+
+    <div v-else class="table-responsive">
+        <table class="table table-dark table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Imagen</th>
+                    <th>Nombre</th>
+                    <th>Fecha</th>
+                    <th>Ubicación</th>
+                    <th>Tickets</th>
+                    <th>Precio</th>
+                    <th>Estado</th>
+                    <th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="e in eventos" :key="e.id">
+                    <td>{{ e.id }}</td>
+                    <td>
+                        <img v-if="e.imagenUrl" :src="e.imagenUrl" class="rounded"
+                             style="width:50px;height:50px;object-fit:cover;" />
+                        <span v-else class="text-white-50">—</span>
+                    </td>
+                    <td>{{ e.nombre }}</td>
+                    <td>{{ formatearFecha(e.fechaInicio) }}</td>
+                    <td>{{ e.ciudad }}, {{ e.provincia }}</td>
+                    <td>{{ e.ticketsVendidos }} / {{ e.ticketsTotales }}</td>
+                    <td>${{ e.precioTicket }}</td>
+                    <td>
+                        <span :class="badgeEstado(e.estado)">{{ e.estado }}</span>
+                    </td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-outline-warning" v-on:click="abrirEditar(e.id)">Editar</button>
+                        <button v-if="e.estado !== 'Cancelado' && e.estado !== 'Finalizado'"
+                                class="btn btn-sm btn-outline-danger" v-on:click="eliminar(e.id)">Cancelar</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal -->
+    <div v-if="modalAbierto" class="modal d-block" style="background:rgba(0,0,0,.7)" v-on:click.self="cerrarModal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content bg-dark text-light border-secondary">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ editando ? 'Editar evento' : 'Nuevo evento' }}</h5>
+                    <button type="button" class="btn-close btn-close-white" v-on:click="cerrarModal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input v-model="form.nombre" class="form-control bg-dark text-light border-secondary" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <textarea v-model="form.descripcion" class="form-control bg-dark text-light border-secondary"
+                                  rows="2"></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Fecha inicio</label>
+                            <input v-model="form.fechaInicio" type="datetime-local"
+                                   class="form-control bg-dark text-light border-secondary" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Fecha fin</label>
+                            <input v-model="form.fechaFin" type="datetime-local"
+                                   class="form-control bg-dark text-light border-secondary" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Provincia</label>
+                            <input v-model="form.provincia" class="form-control bg-dark text-light border-secondary" />
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Ciudad</label>
+                            <input v-model="form.ciudad" class="form-control bg-dark text-light border-secondary" />
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Establecimiento</label>
+                            <input v-model="form.establecimiento"
+                                   class="form-control bg-dark text-light border-secondary" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Tickets totales</label>
+                            <input v-model.number="form.ticketsTotales" type="number"
+                                   class="form-control bg-dark text-light border-secondary" />
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Precio</label>
+                            <input v-model.number="form.precioTicket" type="number" step="0.01"
+                                   class="form-control bg-dark text-light border-secondary" />
+                        </div>
+                        <div class="col-md-4 mb-3 d-flex align-items-end">
+                            <div class="form-check form-switch">
+                                <input v-model="form.privado" class="form-check-input" type="checkbox" role="switch" />
+                                <label class="form-check-label">Privado</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Imagen</label>
+                        <input type="file" v-on:change="onFileChange"
+                               class="form-control bg-dark text-light border-secondary" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" v-on:click="cerrarModal">Cancelar</button>
+                    <button class="btn btn-success" v-on:click="guardar" :disabled="guardando">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    eventos: [],
+                    cargando: true,
+                    modalAbierto: false,
+                    editando: false,
+                    guardando: false,
+                    mensaje: '',
+                    error: false,
+                    form: {},
+                    archivo: null,
+                    pagina: 1
+                };
+            },
+            mounted() {
+                this.cargar();
+            },
+            methods: {
+                formatearFecha(f) {
+                    if (!f) return '';
+                    return new Date(f).toLocaleString('es-AR', { dateStyle: 'short', timeStyle: 'short' });
+                },
+                badgeEstado(estado) {
+                    switch (estado) {
+                        case 'Publicado': return 'badge bg-success';
+                        case 'EnRevision': return 'badge bg-warning text-dark';
+                        case 'Cancelado': return 'badge bg-danger';
+                        case 'Finalizado': return 'badge bg-secondary';
+                        default: return 'badge bg-secondary';
+                    }
+                },
+                async cargar() {
+                    this.cargando = true;
+                    const res = await fetch(`/api/eventos?pagina=${this.pagina}`);
+                    if (!res.ok) {
+                        this.mostrarMensaje('Error al cargar eventos', true);
+                        this.cargando = false;
+                        return;
+                    }
+                    const data = await res.json();
+                    this.eventos = data.items;
+                    this.cargando = false;
+                },
+                abrirCrear() {
+                    this.editando = false;
+                    this.form = {
+                        nombre: '',
+                        descripcion: '',
+                        fechaInicio: '',
+                        fechaFin: '',
+                        provincia: '',
+                        ciudad: '',
+                        establecimiento: '',
+                        privado: false,
+                        ticketsTotales: 1,
+                        precioTicket: 0
+                    };
+                    this.archivo = null;
+                    this.modalAbierto = true;
+                },
+                async abrirEditar(id) {
+                    const res = await fetch(`/api/eventos/${id}`);
+                    if (!res.ok) { this.mostrarMensaje('No se pudo cargar el evento', true); return; }
+                    const e = await res.json();
+                    this.editando = true;
+                    this.form = {
+                        id: e.id,
+                        nombre: e.nombre,
+                        descripcion: e.descripcion,
+                        fechaInicio: e.fechaInicio?.slice(0, 16),
+                        fechaFin: e.fechaFin?.slice(0, 16),
+                        provincia: e.provincia,
+                        ciudad: e.ciudad,
+                        establecimiento: e.establecimiento,
+                        privado: e.privado,
+                        ticketsTotales: e.ticketsTotales,
+                        precioTicket: e.precioTicket
+                    };
+                    this.archivo = null;
+                    this.modalAbierto = true;
+                },
+                cerrarModal() {
+                    this.modalAbierto = false;
+                },
+                onFileChange(ev) {
+                    this.archivo = ev.target.files[0] || null;
+                },
+                async guardar() {
+                    this.guardando = true;
+                    const fd = new FormData();
+                    for (const [k, v] of Object.entries(this.form)) {
+                        if (k === 'id' && !this.editando) continue;
+                        fd.append(k, v ?? '');
+                    }
+                    if (this.archivo) fd.append('imagen', this.archivo);
+
+                    const url = this.editando ? `/api/eventos/${this.form.id}` : '/api/eventos';
+                    const method = this.editando ? 'PUT' : 'POST';
+
+                    const res = await fetch(url, { method, body: fd });
+                    if (res.ok) {
+                        this.cerrarModal();
+                        this.mostrarMensaje(this.editando ? 'Evento actualizado' : 'Evento creado', false);
+                        await this.cargar();
+                    } else {
+                        let msg = 'Error al guardar';
+                        try {
+                            const data = await res.json();
+                            msg = data.error || JSON.stringify(data.errors) || msg;
+                        } catch { }
+                        this.mostrarMensaje(msg, true);
+                    }
+                    this.guardando = false;
+                },
+                async eliminar(id) {
+                    if (!confirm('¿Cancelar este evento?')) return;
+                    const res = await fetch(`/api/eventos/${id}`, { method: 'DELETE' });
+                    if (res.ok) {
+                        this.mostrarMensaje('Evento cancelado', false);
+                        await this.cargar();
+                    } else {
+                        let msg = 'Error al cancelar';
+                        try {
+                            const data = await res.json();
+                            msg = data.error || JSON.stringify(data) || msg;
+                        } catch { }
+                        this.mostrarMensaje(msg, true);
+                    }
+                },
+                mostrarMensaje(texto, esError) {
+                    this.mensaje = texto;
+                    this.error = esError;
+                    setTimeout(() => this.mensaje = '', 4000);
+                }
+            }
+        }).mount('#app');
+    </script>
+}

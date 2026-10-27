@@ -100,6 +100,11 @@ namespace TicketsGO.Migrations
                         .HasColumnType("int")
                         .HasColumnName("id_usuario");
 
+                    b.Property<string>("ImagenUrl")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("imagen_url");
+
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(150)

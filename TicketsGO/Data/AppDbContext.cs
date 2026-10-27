@@ -105,6 +105,9 @@ namespace TicketsGO.Data
                     .HasColumnName("estado")
                     .HasConversion<string>()
                     .HasMaxLength(30);
+                entidad.Property(e => e.ImagenUrl)
+                    .HasColumnName("imagen_url")
+                    .HasMaxLength(255);
 
                 entidad.HasOne(e => e.Usuario)
                     .WithMany()

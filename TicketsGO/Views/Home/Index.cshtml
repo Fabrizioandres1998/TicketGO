@@ -1,8 +1,121 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Eventos";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div id="app" class="container py-5 bg-dark text-light min-vh-100">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 fw-bold mb-0">Eventos disponibles</h1>
+    </div>
+
+    <div class="input-group mb-4">
+        <input v-model="nombre" v-on:input="buscarConDebounce" type="text"
+               class="form-control bg-dark text-light border-secondary"
+               placeholder="Buscar por nombre..." />
+        <button class="btn btn-outline-light" v-on:click="buscar">Buscar</button>
+    </div>
+
+    <div v-if="cargando" class="text-center">Cargando...</div>
+
+    <div v-else-if="eventos.length === 0" class="alert alert-dark border-secondary text-light text-center">
+        No hay eventos publicados que coincidan con la búsqueda.
+    </div>
+
+    <div v-else class="row g-4">
+        <div v-for="e in eventos" :key="e.id" class="col-md-6 col-lg-4">
+            <div class="card bg-black border-secondary shadow-lg rounded-4 h-100">
+                <img v-if="e.imagenUrl" :src="e.imagenUrl" class="card-img-top rounded-top-4"
+                     style="height:180px;object-fit:cover;" :alt="e.nombre" />
+                <div v-else class="d-flex align-items-center justify-content-center bg-secondary rounded-top-4"
+                     style="height:180px;">
+                    <span class="text-white-50">Sin imagen</span>
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title fw-bold">{{ e.nombre }}</h5>
+                    <p class="text-white-50 small mb-1">{{ formatearFecha(e.fechaInicio) }}</p>
+                    <p class="text-white-50 small mb-3">{{ e.ciudad }}, {{ e.provincia }}</p>
+                    <div class="mt-auto d-flex justify-content-between align-items-center">
+                        <span class="badge bg-success">${{ e.precioTicket }}</span>
+                        <a :href="'/Evento/Details/' + e.id" class="btn btn-sm btn-outline-info">Ver detalle</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav v-if="totalPaginas > 1" class="mt-4">
+        <ul class="pagination justify-content-center mb-0">
+            <li class="page-item" :class="{ disabled: pagina <= 1 }">
+                <button class="page-link bg-dark text-light border-secondary"
+                        v-on:click="cambiarPagina(pagina - 1)">&lsaquo;</button>
+            </li>
+            <li v-for="i in totalPaginas" :key="i" class="page-item" :class="{ active: i === pagina }">
+                <button class="page-link bg-dark text-light border-secondary" v-on:click="cambiarPagina(i)">{{ i }}</button>
+            </li>
+            <li class="page-item" :class="{ disabled: pagina >= totalPaginas }">
+                <button class="page-link bg-dark text-light border-secondary"
+                        v-on:click="cambiarPagina(pagina + 1)">&rsaquo;</button>
+            </li>
+        </ul>
+    </nav>
 </div>
+
+@section Scripts {
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script>
+        const { createApp } = Vue;
+
+        createApp({
+            data() {
+                return {
+                    eventos: [],
+                    cargando: true,
+                    nombre: '',
+                    pagina: 1,
+                    totalCount: 0,
+                    pageSize: 10,
+                    debounceTimer: null
+                };
+            },
+            computed: {
+                totalPaginas() {
+                    return Math.ceil(this.totalCount / this.pageSize) || 0;
+                }
+            },
+            mounted() {
+                this.buscar();
+            },
+            methods: {
+                formatearFecha(f) {
+                    if (!f) return '';
+                    return new Date(f).toLocaleString('es-AR', { dateStyle: 'short', timeStyle: 'short' });
+                },
+                buscarConDebounce() {
+                    clearTimeout(this.debounceTimer);
+                    this.debounceTimer = setTimeout(() => {
+                        this.pagina = 1;
+                        this.buscar();
+                    }, 300);
+                },
+                async buscar() {
+                    this.cargando = true;
+                    const url = `/Home/Buscar?nombre=${encodeURIComponent(this.nombre)}&pagina=${this.pagina}`;
+                    const res = await fetch(url);
+                    if (!res.ok) {
+                        this.cargando = false;
+                        return;
+                    }
+                    const data = await res.json();
+                    this.eventos = data.items;
+                    this.totalCount = data.totalCount;
+                    this.pageSize = data.pageSize;
+                    this.cargando = false;
+                },
+                cambiarPagina(p) {
+                    if (p < 1 || p > this.totalPaginas) return;
+                    this.pagina = p;
+                    this.buscar();
+                }
+            }
+        }).mount('#app');
+    </script>
+}

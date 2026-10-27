@@ -65,5 +65,10 @@ namespace TicketsGO.Models
         [Required]
         [Display(Name = "Estado")]
         public EstadoEvento Estado { get; set; }
+
+        [Display(Name = "Imagen")]
+        [StringLength(255)]
+        public string? ImagenUrl { get; set; }
+        
     }
 }

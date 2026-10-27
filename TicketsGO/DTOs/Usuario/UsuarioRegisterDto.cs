@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using TicketsGO.Models;
 
 namespace TicketsGO.DTOs
 {
@@ -22,7 +23,7 @@ namespace TicketsGO.DTOs
 
         [StringLength(45, ErrorMessage = "El teléfono no puede superar los 45 caracteres.")]
         [Display(Name = "Teléfono")]
-        [Phone(ErrorMessage = "El formato del teléfono no es válido.")] // Opcional, valida formato de teléfono
+        [Phone(ErrorMessage = "El formato del teléfono no es válido.")]
         public string? Telefono { get; set; }
 
         [Required(ErrorMessage = "La contraseña es obligatoria.")]
@@ -35,5 +36,9 @@ namespace TicketsGO.DTOs
         [Compare("Password", ErrorMessage = "Las contraseñas no coinciden.")]
         [Display(Name = "Confirmar contraseña")]
         public string ConfirmPassword { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "El tipo de cuenta es obligatorio.")]
+        [Display(Name = "Tipo de cuenta")]
+        public RolUsuario Rol { get; set; } = RolUsuario.Usuario;
     }
 }
