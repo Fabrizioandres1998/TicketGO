@@ -15,6 +15,21 @@
                         <a asp-action="Index" class="btn btn-outline-light btn-sm">Volver</a>
                     </div>
 
+                    <div class="text-center mb-4">
+                        @if (!string.IsNullOrWhiteSpace(Model.AvatarUrl))
+                        {
+                            <img src="@Model.AvatarUrl" alt="Avatar" class="rounded-circle border border-secondary"
+                                 style="width:120px;height:120px;object-fit:cover;" />
+                        }
+                        else
+                        {
+                            <div class="rounded-circle border border-secondary d-inline-flex align-items-center justify-content-center"
+                                 style="width:120px;height:120px;">
+                                <span class="text-white-50 small">Sin avatar</span>
+                            </div>
+                        }
+                    </div>
+
                     <dl class="row mb-0">
                         <dt class="col-sm-4 text-secondary">ID</dt>
                         <dd class="col-sm-8">@Model.Id</dd>
@@ -46,7 +61,7 @@
 
                     <div class="d-flex gap-2 mt-4">
                         <a asp-action="Edit" asp-route-id="@Model.Id"
-                            class="btn btn-outline-warning btn-lg fw-bold">Editar</a>
+                           class="btn btn-outline-warning btn-lg fw-bold">Editar</a>
                         <a asp-action="Index" class="btn btn-outline-secondary btn-lg">Cancelar</a>
                     </div>
                 </div>

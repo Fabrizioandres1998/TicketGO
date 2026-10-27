@@ -31,4 +31,5 @@ public interface IUsuarioService
     Task SuspenderUsuarioAsync(int id, int idAdminQueEjecuta);
     Task ReactivarUsuarioAsync(int id);
     Task CambiarRolAsync(int id, RolUsuario nuevoRol, int idAdminQueEjecuta);
+    Task ActualizarAvatarAsync(int idUsuario, string avatarUrl);
 }

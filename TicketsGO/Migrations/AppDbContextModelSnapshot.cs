@@ -254,6 +254,9 @@ namespace TicketsGO.Migrations
                         .HasColumnType("varchar(100)")
                         .HasColumnName("apellido");
 
+                    b.Property<string>("AvatarUrl")
+                        .HasColumnType("longtext");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(150)

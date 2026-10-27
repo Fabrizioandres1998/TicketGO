@@ -44,6 +44,14 @@
                                 <a class="nav-link text-light" asp-controller="Usuario" asp-action="MyDetails">Mi perfil</a>
                             </li>
                             <li class="nav-item d-flex align-items-center">
+                                @{
+                                    var avatarUrl = User.FindFirst("AvatarUrl")?.Value;
+                                }
+                                @if (!string.IsNullOrWhiteSpace(avatarUrl))
+                                {
+                                    <img src="@avatarUrl" alt="Avatar" class="rounded-circle me-2 border border-secondary"
+                                         style="width:32px;height:32px;object-fit:cover;" />
+                                }
                                 <span class="navbar-text text-light me-3">
                                     @(User.FindFirst("NombreCompleto")?.Value ?? User.Identity?.Name)
                                 </span>

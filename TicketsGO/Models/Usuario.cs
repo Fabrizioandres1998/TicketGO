@@ -47,5 +47,6 @@ namespace TicketsGO.Models
         public string? VerificationToken { get; set; }
 
         public DateTime? ResetPasswordExpires { get; set; }
+        public string? AvatarUrl { get; set; }
     }
 }

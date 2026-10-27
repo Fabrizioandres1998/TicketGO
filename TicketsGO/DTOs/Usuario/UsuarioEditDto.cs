@@ -19,5 +19,10 @@ namespace TicketsGO.DTOs
         [StringLength(45)]
         [Display(Name = "Teléfono")]
         public string? Telefono { get; set; }
+
+        [Display(Name = "Avatar")]
+        public IFormFile? Avatar { get; set; }
+
+        public string? AvatarUrl { get; set; }
     }
 }

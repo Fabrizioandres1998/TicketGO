@@ -15,10 +15,13 @@ public class UsuarioController : Controller
     private readonly ILogger<UsuarioController> _logger;
     private readonly IUsuarioService _usuarioService;
 
-    public UsuarioController(ILogger<UsuarioController> logger, IUsuarioService usuarioService)
+    private readonly IFileService _fileService;
+
+    public UsuarioController(ILogger<UsuarioController> logger, IUsuarioService usuarioService, IFileService fileService)
     {
         _logger = logger;
         _usuarioService = usuarioService;
+        _fileService = fileService;
     }
 
     // --- LISTADOS Y DETALLES ---
@@ -67,7 +70,8 @@ public class UsuarioController : Controller
             Email = usuario.Email!,
             Telefono = usuario.Telefono,
             Rol = usuario.Rol.ToString(),
-            Estado = usuario.Estado
+            Estado = usuario.Estado,
+            AvatarUrl = usuario.AvatarUrl
         };
 
         return View(usuarioDto);
@@ -169,7 +173,8 @@ public class UsuarioController : Controller
             Id = usuario.Id,
             Nombre = usuario.Nombre!,
             Apellido = usuario.Apellido!,
-            Telefono = usuario.Telefono
+            Telefono = usuario.Telefono,
+            AvatarUrl = usuario.AvatarUrl
         };
 
         return View(dto);
@@ -184,6 +189,17 @@ public class UsuarioController : Controller
 
         try
         {
+            var usuarioDb = await _usuarioService.GetUsuarioByIdAsync(dto.Id);
+            if (usuarioDb == null) return NotFound();
+
+            // Si subió un avatar nuevo, guardarlo y borrar el anterior
+            if (dto.Avatar != null && dto.Avatar.Length > 0)
+            {
+                var nuevoAvatar = await _fileService.SaveAvatarAsync(dto.Avatar);
+                _fileService.DeleteFile(usuarioDb.AvatarUrl);
+                await _usuarioService.ActualizarAvatarAsync(dto.Id, nuevoAvatar);
+            }
+
             var usuario = new Usuario
             {
                 Id = dto.Id,
@@ -193,6 +209,7 @@ public class UsuarioController : Controller
             };
 
             await _usuarioService.ModificarUsuarioAsync(usuario);
+            TempData["Success"] = "Perfil actualizado correctamente.";
             return RedirectToAction(nameof(MyDetails));
         }
         catch (Exception ex)
@@ -217,7 +234,8 @@ public class UsuarioController : Controller
             Email = usuario.Email!,
             Telefono = usuario.Telefono,
             Rol = usuario.Rol.ToString(),
-            Estado = usuario.Estado
+            Estado = usuario.Estado,
+            AvatarUrl = usuario.AvatarUrl 
         };
 
         return View(usuarioDto);
@@ -419,7 +437,8 @@ public class UsuarioController : Controller
                     new Claim(ClaimTypes.NameIdentifier, usuario!.Id.ToString()),
                     new Claim(ClaimTypes.Name, usuario.Email!),
                     new Claim(ClaimTypes.Role, usuario.Rol.ToString()),
-                    new Claim("NombreCompleto", $"{usuario.Nombre} {usuario.Apellido}")
+                    new Claim("NombreCompleto", $"{usuario.Nombre} {usuario.Apellido}"),
+                    new Claim("AvatarUrl", usuario.AvatarUrl ?? "")
                 };
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             await HttpContext.SignInAsync(

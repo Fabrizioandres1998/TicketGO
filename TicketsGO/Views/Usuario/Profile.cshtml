@@ -15,11 +15,36 @@
                         <a asp-action="MyDetails" class="btn btn-outline-light btn-sm">Volver</a>
                     </div>
 
-                    <form asp-action="Profile" method="post">
+                    <form asp-action="Profile" method="post" enctype="multipart/form-data">
                         @Html.AntiForgeryToken()
                         <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="AvatarUrl" />
 
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="text-center mb-4">
+                            @if (!string.IsNullOrWhiteSpace(Model.AvatarUrl))
+                            {
+                                <img src="@Model.AvatarUrl" alt="Avatar actual"
+                                     class="rounded-circle border border-secondary"
+                                     style="width:100px;height:100px;object-fit:cover;" />
+                            }
+                            else
+                            {
+                                <div class="rounded-circle border border-secondary d-inline-flex align-items-center justify-content-center"
+                                     style="width:100px;height:100px;">
+                                    <span class="text-white-50 small">Sin avatar</span>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Avatar" class="form-label"></label>
+                            <input asp-for="Avatar" type="file" accept=".jpg,.jpeg,.png,.webp"
+                                   class="form-control bg-dark text-light border-secondary" />
+                            <span asp-validation-for="Avatar" class="text-danger small"></span>
+                            <div class="form-text text-white-50">JPG, PNG o WEBP. Máximo 2 MB.</div>
+                        </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -41,16 +66,17 @@
                         </div>
 
                         <div class="d-flex gap-2 mt-2">
-                            <button type="submit" class="btn btn-success btn-lg flex-grow-1 fw-bold">Guardar cambios</button>
-                            <a asp-action="MyDetails" class="btn btn-outline-secondary btn-lg">Cancelar</a>
-                        </div>
-                    </form>
+                            <button type="submit" class="btn btn-success btn-lg flex-grow-1 fw-bold">Guardar
+                                cambios</button>
+                                <a asp-action="MyDetails" class="btn btn-outline-secondary btn-lg">Cancelar</a>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }

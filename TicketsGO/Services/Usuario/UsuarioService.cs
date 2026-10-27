@@ -281,6 +281,14 @@ public class UsuarioService : IUsuarioService
         await _context.SaveChangesAsync();
         _logger.LogInformation("Rol del usuario {UsuarioId} cambiado a {NuevoRol} por el admin {AdminId}", id, nuevoRol, idAdminQueEjecuta);
     }
+    public async Task ActualizarAvatarAsync(int idUsuario, string avatarUrl)
+    {
+        var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Id == idUsuario);
+        if (usuario == null) throw new KeyNotFoundException("El usuario no existe");
+
+        usuario.AvatarUrl = avatarUrl;
+        await _context.SaveChangesAsync();
+    }
 
     // VerificarEmailAsync queda pendiente para cuando se integre el envío de mails.
     // public async Task VerificarEmailAsync(string token)
