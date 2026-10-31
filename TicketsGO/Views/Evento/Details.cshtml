@@ -44,28 +44,55 @@
                         <dd class="col-sm-8">$@Model.PrecioTicket</dd>
 
                         <dt class="col-sm-4 text-secondary">Tickets</dt>
-                        <dd class="col-sm-8">@Model.TicketsVendidos vendidos de @Model.TicketsTotales (@Model.TicketsDisponibles disponibles)</dd>
+                        <dd class="col-sm-8">@Model.TicketsVendidos vendidos de @Model.TicketsTotales
+                            (@Model.TicketsDisponibles disponibles)</dd>
 
-                        <dt class="col-sm-4 text-secondary">Estado</dt>
-                        <dd class="col-sm-8">@Model.Estado</dd>
+                            <dt class="col-sm-4 text-secondary">Estado</dt>
+                            <dd class="col-sm-8">
+                                @if (Model.Estado == "Publicado")
+                                {
+                                    <span class="badge bg-success">@Model.Estado</span>
+                                }
+                                else if (Model.Estado == "EnRevision")
+                                {
+                                    <span class="badge bg-warning text-dark">@Model.Estado</span>
+                                }
+                                else if (Model.Estado == "Cancelado")
+                                {
+                                    <span class="badge bg-danger">@Model.Estado</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">@Model.Estado</span>
+                                }
+                            </dd>
 
-                        <dt class="col-sm-4 text-secondary">Productor</dt>
-                        <dd class="col-sm-8">@Model.Productor</dd>
-                    </dl>
+                            <dt class="col-sm-4 text-secondary">Productor</dt>
+                            <dd class="col-sm-8">@Model.Productor</dd>
+                        </dl>
 
-                    <div class="d-flex gap-2 mt-4">
-                        @if (esProductorOAdmin)
-                        {
-                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-warning btn-lg fw-bold">Editar</a>
-                        }
-                        @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Usuario"))
-                        {
-                            <button class="btn btn-success btn-lg fw-bold" disabled>Comprar (próximamente)</button>
-                        }
-                        <a asp-action="Public" class="btn btn-outline-secondary btn-lg">Volver</a>
+                        <div class="d-flex gap-2 mt-4 flex-wrap">
+                            @if (esProductorOAdmin)
+                            {
+                                <a asp-action="GestionVue" asp-route-editId="@Model.Id"
+                                   class="btn btn-outline-warning btn-lg fw-bold">Gestionar evento</a>
+                            }
+                            @if (User.IsInRole("Administrador") ||
+                                 (User.IsInRole("Productor") && User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value == Model.IdUsuario.ToString()))
+                            {
+                                <a asp-controller="Historial" asp-action="PorEvento" asp-route-idEvento="@Model.Id"
+                                   class="btn btn-outline-info btn-lg fw-bold">Ver historial</a>
+                            }
+                            @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Usuario") && Model.Estado ==
+        "Publicado")
+                            {
+                                <a asp-controller="Compra" asp-action="Create" asp-route-idEvento="@Model.Id"
+                                   class="btn btn-success btn-lg fw-bold">Comprar tickets</a>
+                            }
+                            <a asp-action="Public" class="btn btn-outline-secondary btn-lg">Volver</a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>

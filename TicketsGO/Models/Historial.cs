@@ -21,5 +21,9 @@ namespace TicketsGO.Models
         [Required]
         [Display(Name = "Descripción")]
         public string? Descripcion { get; set; }
+
+        [Required]
+        [Display(Name = "Fecha")]
+        public DateTime Fecha { get; set; } = DateTime.Now;
     }
 }

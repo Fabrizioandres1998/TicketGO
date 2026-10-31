@@ -1,10 +1,15 @@
-﻿<!DOCTYPE html>
+﻿@using System.Security.Claims
+@inject TicketsGO.Services.INotificacionService NotificacionService
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - TicketsGO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/TicketsGO.styles.css" asp-append-version="true" />
@@ -12,96 +17,105 @@
 
 <body class="bg-dark text-light">
     <header>
-        <nav
-            class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-black border-bottom border-secondary mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand text-light" asp-area="" asp-controller="Home" asp-action="Index">TicketsGO</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
-                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <nav class="navbar navbar-expand-lg navbar-dark ticketgo-navbar mb-4">
+            <div class="container-fluid px-lg-4">
+                <a class="navbar-brand ticketgo-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <span class="ticketgo-brand-mark">T</span>TicketGO
+                </a>
+                <button class="navbar-toggler border-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#ticketgoNavbar"
+                        aria-controls="ticketgoNavbar" aria-expanded="false" aria-label="Abrir navegación">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                       
-                        @if (User.Identity?.IsAuthenticated == true && (User.IsInRole("Productor") ||
-                         User.IsInRole("Administrador")))
+                <div class="collapse navbar-collapse" id="ticketgoNavbar">
+                    <ul class="navbar-nav me-auto align-items-lg-center gap-lg-1">
+                        @if (User.Identity?.IsAuthenticated == true && (User.IsInRole("Productor") || User.IsInRole("Administrador")))
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-controller="Evento" asp-action="GestionVue">Gestionar
-                                    eventos</a>
-                                </li>
-                            }
-                            @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Administrador"))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link text-light" asp-controller="Usuario" asp-action="Index">Usuarios</a>
-                                </li>
-                            }
-                        </ul>
+                            <li class="nav-item"><a class="nav-link ticketgo-nav-link" asp-controller="Evento" asp-action="GestionVue">Gestionar eventos</a></li>
+                        }
+                        @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Administrador"))
+                        {
+                            <li class="nav-item"><a class="nav-link ticketgo-nav-link" asp-controller="Usuario" asp-action="Index">Usuarios</a></li>
+                        }
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item"><a class="nav-link ticketgo-nav-link" asp-controller="Compra" asp-action="MisCompras">Mis compras</a></li>
+                            <li class="nav-item"><a class="nav-link ticketgo-nav-link" asp-controller="Ticket" asp-action="MisTickets">Mis tickets</a></li>
+                            <li class="nav-item"><a class="nav-link ticketgo-nav-link" asp-controller="Historial" asp-action="MisMovimientos">Historial</a></li>
+                        }
+                    </ul>
 
-                        <ul class="navbar-nav">
-                            @if (User.Identity?.IsAuthenticated == true)
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link text-light" asp-controller="Usuario" asp-action="MyDetails">Mi perfil</a>
-                                </li>
-                                <li class="nav-item d-flex align-items-center">
-                                    @{
-                                        var avatarUrl = User.FindFirst("AvatarUrl")?.Value;
+                    <ul class="navbar-nav ms-lg-auto align-items-lg-center gap-lg-2">
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            var idUsuarioActual = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+                            var notificacionesNoLeidas = await NotificacionService.ContarNoLeidasAsync(idUsuarioActual);
+                            var avatarUrl = User.FindFirst("AvatarUrl")?.Value;
+                            var nombreUsuario = User.FindFirst("NombreCompleto")?.Value ?? User.Identity?.Name ?? "Mi cuenta";
+
+                            <li class="nav-item">
+                                <a class="nav-link ticketgo-icon-link" asp-controller="Notificaciones" asp-action="Index"
+                                   aria-label="Notificaciones" title="Notificaciones">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true" class="ticketgo-bell">
+                                        <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" />
+                                    </svg>
+                                    @if (notificacionesNoLeidas > 0)
+                                    {
+                                        <span class="ticketgo-notification-count">@(notificacionesNoLeidas > 99 ? "99+" : notificacionesNoLeidas.ToString())</span>
                                     }
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link ticketgo-profile-link" asp-controller="Usuario" asp-action="MyDetails" title="Mi perfil">
                                     @if (!string.IsNullOrWhiteSpace(avatarUrl))
                                     {
-                                        <img src="@avatarUrl" alt="Avatar" class="rounded-circle me-2 border border-secondary"
-                                             style="width:32px;height:32px;object-fit:cover;" />
+                                        <img src="@avatarUrl" alt="" class="ticketgo-avatar" />
                                     }
-                                    <span class="navbar-text text-light me-3">
-                                        @(User.FindFirst("NombreCompleto")?.Value ?? User.Identity?.Name)
-                                    </span>
-                                </li>
-                                <li class="nav-item">
-                                    <form asp-controller="Usuario" asp-action="Logout" method="post" class="d-inline">
-                                        @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-outline-danger btn-sm">Cerrar sesión</button>
-                                    </form>
-                                </li>
-                            }
-                            else
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link text-light" asp-controller="Usuario" asp-action="Login">Iniciar
-                                        sesión</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link text-light" asp-controller="Usuario"
-                                           asp-action="Register">Registrarse</a>
-                                    </li>
-                                }
-                            </ul>
-                        </div>
-                    </div>
-                </nav>
-            </header>
-
-            <div class="container">
-                <main role="main" class="pb-3">
-                    @RenderBody()
-                </main>
-            </div>
-
-            <footer class="border-top border-secondary footer text-muted bg-black">
-                <div class="container py-3">
-                    &copy; 2026 - TicketsGO - <a asp-area="" asp-controller="Home" asp-action="Privacy"
-                                                 class="text-secondary">Privacy</a>
+                                    else
+                                    {
+                                        <span class="ticketgo-avatar ticketgo-avatar-fallback" aria-hidden="true">
+                                            <svg viewBox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z" /></svg>
+                                        </span>
+                                    }
+                                    <span class="ticketgo-profile-name">@nombreUsuario</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <form asp-controller="Usuario" asp-action="Logout" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="nav-link ticketgo-nav-link ticketgo-logout">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17l5-5-5-5M15 12H3m9-9h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7" /></svg>
+                                        <span>Cerrar sesión</span>
+                                    </button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item"><a class="nav-link ticketgo-nav-link" asp-controller="Usuario" asp-action="Login">Iniciar sesión</a></li>
+                            <li class="nav-item"><a class="nav-link ticketgo-register-link" asp-controller="Usuario" asp-action="Register">Registrarse</a></li>
+                        }
+                    </ul>
                 </div>
-            </footer>
+            </div>
+        </nav>
+    </header>
 
-            <script src="~/lib/jquery/dist/jquery.min.js"></script>
-            <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-            <script src="~/js/site.js" asp-append-version="true"></script>
-            @await RenderSectionAsync("Scripts", required: false)
-        </body>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
 
-    </html>
+    <footer class="border-top border-secondary footer text-muted bg-black">
+        <div class="container py-3">
+            &copy; 2026 - TicketsGO - <a asp-area="" asp-controller="Home" asp-action="Privacy" class="text-secondary">Privacy</a>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>

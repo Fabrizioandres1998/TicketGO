@@ -13,6 +13,7 @@ namespace TicketsGO.Data
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<Compra> Compras { get; set; }
         public DbSet<Historial> Historiales { get; set; }
+        public DbSet<Notificacion> Notificaciones { get; set; }
         public DbSet<Transferencia> Transferencias { get; set; }
 
         // ============================================================
@@ -35,6 +36,7 @@ namespace TicketsGO.Data
             ConfigurarCompra(modelBuilder);
             ConfigurarTransferencia(modelBuilder);
             ConfigurarHistorial(modelBuilder);
+            ConfigurarNotificacion(modelBuilder);
         }
 
         // ============================================================
@@ -238,6 +240,10 @@ namespace TicketsGO.Data
                 entidad.Property(h => h.Descripcion)
                     .HasColumnName("descripcion")
                     .HasColumnType("TEXT");
+                entidad.Property(h => h.Fecha)
+                    .HasColumnName("fecha")
+                    .HasColumnType("DATETIME")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                 entidad.HasOne(h => h.Evento)
                     .WithMany()
@@ -247,6 +253,31 @@ namespace TicketsGO.Data
                 entidad.HasOne(h => h.Usuario)
                     .WithMany()
                     .HasForeignKey(h => h.IdUsuario)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+        }
+
+        private static void ConfigurarNotificacion(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Notificacion>(entidad =>
+            {
+                entidad.ToTable("notificacion");
+                entidad.HasKey(n => n.Id);
+
+                entidad.Property(n => n.Id).HasColumnName("id_notificacion");
+                entidad.Property(n => n.IdUsuario).HasColumnName("id_usuario");
+                entidad.Property(n => n.Titulo).HasColumnName("titulo").HasMaxLength(120);
+                entidad.Property(n => n.Mensaje).HasColumnName("mensaje").HasMaxLength(500);
+                entidad.Property(n => n.Url).HasColumnName("url").HasMaxLength(500);
+                entidad.Property(n => n.Fecha)
+                    .HasColumnName("fecha")
+                    .HasColumnType("DATETIME")
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                entidad.Property(n => n.Leida).HasColumnName("leida");
+
+                entidad.HasOne(n => n.Usuario)
+                    .WithMany()
+                    .HasForeignKey(n => n.IdUsuario)
                     .OnDelete(DeleteBehavior.Restrict);
             });
         }

@@ -101,7 +101,8 @@ public class EventoController : Controller
     {
         try
         {
-            await _eventoService.AprobarAsync(id);
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            await _eventoService.AprobarAsync(id, userId);
             TempData["Success"] = "Evento aprobado.";
         }
         catch (Exception ex)
@@ -118,7 +119,8 @@ public class EventoController : Controller
     {
         try
         {
-            await _eventoService.RechazarAsync(id);
+            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            await _eventoService.RechazarAsync(id, userId);
             TempData["Success"] = "Evento rechazado.";
         }
         catch (Exception ex)

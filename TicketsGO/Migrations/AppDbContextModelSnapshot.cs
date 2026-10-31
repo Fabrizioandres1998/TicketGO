@@ -153,6 +153,12 @@ namespace TicketsGO.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("descripcion");
 
+                    b.Property<DateTime>("Fecha")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("DATETIME")
+                        .HasColumnName("fecha")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
                     b.Property<int>("IdEvento")
                         .HasColumnType("int")
                         .HasColumnName("id_evento");
@@ -168,6 +174,51 @@ namespace TicketsGO.Migrations
                     b.HasIndex("IdUsuario");
 
                     b.ToTable("historial", (string)null);
+                });
+
+            modelBuilder.Entity("TicketsGO.Models.Notificacion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id_notificacion");
+
+                    b.Property<DateTime>("Fecha")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("DATETIME")
+                        .HasColumnName("fecha")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<int>("IdUsuario")
+                        .HasColumnType("int")
+                        .HasColumnName("id_usuario");
+
+                    b.Property<bool>("Leida")
+                        .HasColumnType("tinyint(1)")
+                        .HasColumnName("leida");
+
+                    b.Property<string>("Mensaje")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)")
+                        .HasColumnName("mensaje");
+
+                    b.Property<string>("Titulo")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("varchar(120)")
+                        .HasColumnName("titulo");
+
+                    b.Property<string>("Url")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)")
+                        .HasColumnName("url");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdUsuario");
+
+                    b.ToTable("notificacion", (string)null);
                 });
 
             modelBuilder.Entity("TicketsGO.Models.Ticket", b =>
@@ -361,6 +412,17 @@ namespace TicketsGO.Migrations
                         .IsRequired();
 
                     b.Navigation("Evento");
+
+                    b.Navigation("Usuario");
+                });
+
+            modelBuilder.Entity("TicketsGO.Models.Notificacion", b =>
+                {
+                    b.HasOne("TicketsGO.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("IdUsuario")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Usuario");
                 });

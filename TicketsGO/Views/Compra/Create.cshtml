@@ -1,0 +1,114 @@
+@model TicketsGO.DTOs.CompraCreateDto
+
+@{
+    ViewData["Title"] = "Comprar tickets";
+}
+
+<div id="app" class="container py-5 bg-dark text-light min-vh-100">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card bg-black border-secondary shadow-lg rounded-4">
+                <div class="card-body p-4 p-md-5">
+                    <h1 class="h3 fw-bold mb-4">Comprar tickets</h1>
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger bg-danger text-light border-0">
+                            @Html.ValidationSummary(false, "", new { @class = "mb-0" })
+                        </div>
+                    }
+
+                    <form asp-action="Create" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-3 position-relative">
+                            <label class="form-label">Buscar evento</label>
+                            <input v-model="busqueda" v-on:input="buscarEventos" type="text"
+                                   class="form-control bg-dark text-light border-secondary"
+                                   placeholder="Escribí el nombre del evento..." autocomplete="off" />
+
+                            <div v-if="resultados.length > 0" class="list-group position-absolute w-100 mt-1"
+                                 style="z-index:1000;">
+                                <button type="button" v-for="e in resultados" :key="e.id"
+                                        class="list-group-item list-group-item-action bg-dark text-light border-secondary"
+                                        v-on:click="seleccionarEvento(e)">
+                                    <strong>{{ e.nombre }}</strong> — {{ e.ciudad }}, {{ e.provincia }} — ${{
+                                    e.precioTicket }} — {{ e.disponibles }} disponibles
+                                </button>
+                            </div>
+                        </div>
+
+                        <div v-if="eventoSeleccionado" class="alert alert-dark border-secondary">
+                            <strong>Evento seleccionado:</strong> {{ eventoSeleccionado.nombre }}<br />
+                            <small>Fecha: {{ formatearFecha(eventoSeleccionado.fechaInicio) }}</small><br />
+                            <small>Disponibles: {{ eventoSeleccionado.disponibles }}</small>
+                        </div>
+
+                        <input type="hidden" name="IdEvento" :value="eventoSeleccionado?.id" />
+
+                        <div class="mb-4">
+                            <label class="form-label">Cantidad de tickets</label>
+                            <input v-model.number="cantidad" type="number" min="1" max="5" name="TotalTickets"
+                                   class="form-control bg-dark text-light border-secondary" />
+                            <div class="form-text text-white-50">Máximo 5 tickets por evento.</div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-success btn-lg flex-grow-1 fw-bold"
+                                    :disabled="!eventoSeleccionado">
+                                Comprar
+                            </button>
+                            <a asp-action="MisCompras" class="btn btn-outline-secondary btn-lg">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script>
+        const { createApp } = Vue;
+
+        const preseleccionado = @Html.Raw(Json.Serialize(ViewBag.EventoPreseleccionado));
+
+        createApp({
+            data() {
+                return {
+                    busqueda: preseleccionado ? preseleccionado.nombre : '',
+                    resultados: [],
+                    eventoSeleccionado: preseleccionado ?? null,
+                    cantidad: 1,
+                    debounceTimer: null
+                };
+            },
+            methods: {
+                formatearFecha(f) {
+                    if (!f) return '';
+                    return new Date(f).toLocaleString('es-AR', { dateStyle: 'short', timeStyle: 'short' });
+                },
+                buscarEventos() {
+                    clearTimeout(this.debounceTimer);
+                    if (this.busqueda.trim().length < 2) {
+                        this.resultados = [];
+                        return;
+                    }
+                    this.debounceTimer = setTimeout(async () => {
+                        const res = await fetch(`/api/eventos/buscar?nombre=${encodeURIComponent(this.busqueda)}`);
+                        if (res.ok) {
+                            const data = await res.json();
+                            this.resultados = data.items;
+                        }
+                    }, 300);
+                },
+                seleccionarEvento(e) {
+                    this.eventoSeleccionado = e;
+                    this.busqueda = e.nombre;
+                    this.resultados = [];
+                }
+            }
+        }).mount('#app');
+    </script>
+}

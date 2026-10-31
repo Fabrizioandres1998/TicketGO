@@ -1,0 +1,96 @@
+@model TicketsGO.DTOs.TicketDetailsDto
+
+@{
+    ViewData["Title"] = "Detalle del ticket";
+}
+
+<div class="container py-5 bg-dark text-light min-vh-100">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card bg-black border-secondary shadow-lg rounded-4">
+                <div class="card-body p-4 p-md-5">
+
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger bg-danger text-light border-0">@TempData["Error"]</div>
+                    }
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success bg-success text-light border-0">@TempData["Success"]</div>
+                    }
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h1 class="h3 fw-bold mb-0">Detalle del ticket</h1>
+                        <a asp-action="MisTickets" class="btn btn-outline-light btn-sm">Volver</a>
+                    </div>
+
+                    <div class="text-center mb-4">
+                        <div id="ticket-qr" class="bg-white rounded p-2 d-inline-block mb-2"
+                             data-ticket-code="@Model.Codigo" role="img" aria-label="Código QR del ticket"></div>
+                        <br />
+                        <code class="fs-4 text-info">@Model.Codigo</code>
+                    </div>
+
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4 text-secondary">Evento</dt>
+                        <dd class="col-sm-8">@Model.Evento</dd>
+
+                        <dt class="col-sm-4 text-secondary">Fecha</dt>
+                        <dd class="col-sm-8">@Model.FechaEvento.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                        <dt class="col-sm-4 text-secondary">Ubicación</dt>
+                        <dd class="col-sm-8">@Model.Ubicacion</dd>
+
+                        <dt class="col-sm-4 text-secondary">Estado</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.Estado == "NoUsado")
+                            {
+                                <span class="badge bg-success">@Model.EstadoDisplayName</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">@Model.EstadoDisplayName</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-4 text-secondary">Propietario</dt>
+                        <dd class="col-sm-8">@Model.Propietario</dd>
+                    </dl>
+
+                    <div class="d-flex gap-2 mt-4 flex-wrap">
+                        @if (Model.PuedeTransferir)
+                        {
+                            <a asp-action="Transferir" asp-route-id="@Model.Id"
+                               class="btn btn-outline-warning btn-lg fw-bold">Transferir</a>
+                        }
+                        @if (Model.PuedeMarcarUsado)
+                        {
+                            <form asp-action="MarcarUsado" asp-route-id="@Model.Id" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-success btn-lg fw-bold">Usar ticket</button>
+                            </form>
+                        }
+                        <a asp-action="MisTickets" class="btn btn-outline-secondary btn-lg">Volver</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        const qrElement = document.getElementById('ticket-qr');
+        const ticketCode = qrElement?.dataset.ticketCode;
+
+        if (ticketCode && ticketCode !== '—') {
+            new QRCode(qrElement, {
+                text: ticketCode,
+                width: 180,
+                height: 180,
+                correctLevel: QRCode.CorrectLevel.M
+            });
+        }
+    </script>
+}

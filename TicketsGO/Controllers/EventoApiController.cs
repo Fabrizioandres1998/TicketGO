@@ -8,7 +8,7 @@ namespace TicketsGO.Controllers;
 
 [ApiController]
 [Route("api/eventos")]
-[Authorize(Roles = "Productor,Administrador")]
+[Authorize(Policy = "ApiAuthentication", Roles = "Productor,Administrador")]
 public class EventosApiController : ControllerBase
 {
     private readonly IEventoService _eventoService;
@@ -21,19 +21,21 @@ public class EventosApiController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> Listar(int pagina = 1)
+    public async Task<IActionResult> Listar(int pagina = 1, string? busqueda = null)
     {
         var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
         var esAdmin = User.IsInRole("Administrador");
 
         var resultado = esAdmin
-            ? await _eventoService.ListAsync(pagina)
+            ? await _eventoService.ListAsync(pagina, busqueda: busqueda)
             : await _eventoService.ListByUsuarioAsync(userId, pagina);
 
         var items = resultado.Items.Select(e => new
         {
             e.Id,
             e.Nombre,
+            ProductorNombre = e.Usuario != null ? $"{e.Usuario.Nombre} {e.Usuario.Apellido}" : "—",
+            ProductorEmail = e.Usuario?.Email ?? "—",
             e.FechaInicio,
             e.Ciudad,
             e.Provincia,
@@ -176,5 +178,25 @@ public class EventosApiController : ControllerBase
         {
             return BadRequest(new { error = ex.Message });
         }
+    }
+
+    [HttpGet("buscar")]
+    [AllowAnonymous]
+    public async Task<IActionResult> Buscar(string? nombre, int pagina = 1)
+    {
+        var resultado = await _eventoService.BuscarPublicadosAsync(nombre, pagina);
+
+        var items = resultado.Items.Select(e => new
+        {
+            e.Id,
+            e.Nombre,
+            e.FechaInicio,
+            e.Ciudad,
+            e.Provincia,
+            e.PrecioTicket,
+            Disponibles = e.TicketsTotales - e.TicketsVendidos
+        });
+
+        return Ok(new { items, totalCount = resultado.TotalCount });
     }
 }

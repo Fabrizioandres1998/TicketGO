@@ -1,0 +1,84 @@
+@model TicketsGO.Services.PaginatedResult<TicketsGO.Models.Notificacion>
+
+@{
+    ViewData["Title"] = "Notificaciones";
+    var totalPaginas = (int)Math.Ceiling((double)Model.TotalCount / Model.PageSize);
+}
+
+<div class="container py-5 bg-dark text-light min-vh-100">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-9">
+            <div class="card bg-black border-secondary shadow-lg rounded-4">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+                        <div>
+                            <h1 class="h3 fw-bold mb-1">Notificaciones</h1>
+                            <p class="text-white-50 mb-0">Avisos sobre tus compras y movimientos de tickets.</p>
+                        </div>
+                        @if ((int)ViewBag.NoLeidas > 0)
+                        {
+                            <form asp-action="MarcarTodasLeidas" method="post">
+                                @Html.AntiForgeryToken()
+                                <button class="btn btn-outline-info" type="submit">Marcar todas como leídas</button>
+                            </form>
+                        }
+                    </div>
+
+                    @if (!Model.Items.Any())
+                    {
+                        <div class="alert alert-dark border-secondary text-light text-center mb-0">No tenés notificaciones.</div>
+                    }
+                    else
+                    {
+                        <div class="d-grid gap-3">
+                            @foreach (var notificacion in Model.Items)
+                            {
+                                <article class="rounded-3 border @(notificacion.Leida ? "border-secondary" : "border-info") p-3 bg-dark">
+                                    <div class="d-flex justify-content-between align-items-start gap-3">
+                                        <div>
+                                            <div class="d-flex align-items-center gap-2 mb-1">
+                                                <h2 class="h6 fw-bold mb-0">@notificacion.Titulo</h2>
+                                                @if (!notificacion.Leida)
+                                                {
+                                                    <span class="badge bg-info text-dark">Nueva</span>
+                                                }
+                                            </div>
+                                            <p class="mb-2">@notificacion.Mensaje</p>
+                                            <small class="text-white-50">@notificacion.Fecha.ToString("dd/MM/yyyy HH:mm")</small>
+                                        </div>
+                                        @if (!notificacion.Leida)
+                                        {
+                                            <form asp-action="Abrir" method="post" class="flex-shrink-0">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@notificacion.Id" />
+                                                <button class="btn btn-sm btn-outline-light" type="submit">Ver</button>
+                                            </form>
+                                        }
+                                        else if (!string.IsNullOrWhiteSpace(notificacion.Url) && Url.IsLocalUrl(notificacion.Url))
+                                        {
+                                            <a href="@notificacion.Url" class="btn btn-sm btn-outline-light flex-shrink-0">Ver</a>
+                                        }
+                                    </div>
+                                </article>
+                            }
+                        </div>
+
+                        @if (totalPaginas > 1)
+                        {
+                            <nav class="mt-4" aria-label="Páginas de notificaciones">
+                                <ul class="pagination justify-content-center mb-0">
+                                    @for (var i = 1; i <= totalPaginas; i++)
+                                    {
+                                        <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                                            <a class="page-link bg-dark text-light border-secondary" asp-action="Index" asp-route-pagina="@i">@i</a>
+                                        </li>
+                                    }
+                                </ul>
+                            </nav>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

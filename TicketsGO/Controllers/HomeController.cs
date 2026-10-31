@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TicketsGO.DTOs;
 using TicketsGO.Services;
 
 namespace TicketsGO.Controllers;
@@ -17,33 +16,9 @@ public class HomeController : Controller
     }
 
     [AllowAnonymous]
-    public async Task<IActionResult> Index(int pagina = 1)
+    public IActionResult Index()
     {
-        var resultado = await _eventoService.ListPublicadosAsync(pagina);
-
-        var eventosDto = resultado.Items.Select(e => new EventoListDto
-        {
-            Id = e.Id,
-            Nombre = e.Nombre!,
-            FechaInicio = e.FechaInicio,
-            Ubicacion = $"{e.Ciudad}, {e.Provincia}",
-            Estado = e.Estado.ToString(),
-            TicketsTotales = e.TicketsTotales,
-            TicketsVendidos = e.TicketsVendidos,
-            PrecioTicket = e.PrecioTicket,
-            ImagenUrl = e.ImagenUrl,
-            Productor = e.Usuario != null ? $"{e.Usuario.Nombre} {e.Usuario.Apellido}" : "—"
-        }).ToList();
-
-        var resultadoDto = new PaginatedResult<EventoListDto>
-        {
-            Items = eventosDto,
-            TotalCount = resultado.TotalCount,
-            PageNumber = resultado.PageNumber,
-            PageSize = resultado.PageSize
-        };
-
-        return View(resultadoDto);
+        return View();
     }
 
     [AllowAnonymous]
@@ -51,7 +26,7 @@ public class HomeController : Controller
     {
         return View();
     }
-    
+
     [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> Buscar(string? nombre, int pagina = 1)

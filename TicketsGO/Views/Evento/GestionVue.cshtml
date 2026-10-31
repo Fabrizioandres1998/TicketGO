@@ -10,6 +10,22 @@
 
     <div v-if="mensaje" :class="'alert ' + (error ? 'alert-danger' : 'alert-success')">{{ mensaje }}</div>
 
+    <div class="row align-items-center g-3 mb-4">
+        @if (User.IsInRole("Administrador"))
+        {
+            <div class="col-12 col-lg-7">
+                <label class="form-label" for="buscarEventoAdmin">Buscar eventos</label>
+                <input id="buscarEventoAdmin" v-model="busqueda" v-on:input="buscar"
+                       class="form-control bg-dark text-light border-secondary"
+                       placeholder="Nombre del evento, productor o email..." autocomplete="off" />
+                <div class="form-text">La búsqueda incluye el nombre del evento, el nombre del productor y su correo.</div>
+            </div>
+        }
+        <div class="col-12 @(User.IsInRole("Administrador") ? "col-lg-5 text-lg-end" : "text-end") text-white-50 small pt-lg-4">
+            {{ totalCount }} evento(s)
+        </div>
+    </div>
+
     <div v-if="cargando" class="text-center">Cargando...</div>
 
     <div v-else class="table-responsive">
@@ -18,7 +34,8 @@
                 <tr>
                     <th>#</th>
                     <th>Imagen</th>
-                    <th>Nombre</th>
+                    <th>Evento</th>
+                    <th>Productor</th>
                     <th>Fecha</th>
                     <th>Ubicación</th>
                     <th>Tickets</th>
@@ -35,7 +52,11 @@
                              style="width:50px;height:50px;object-fit:cover;" />
                         <span v-else class="text-white-50">—</span>
                     </td>
-                    <td>{{ e.nombre }}</td>
+                    <td class="fw-semibold">{{ e.nombre }}</td>
+                    <td>
+                        <div>{{ e.productorNombre }}</div>
+                        <small class="text-white-50">{{ e.productorEmail }}</small>
+                    </td>
                     <td>{{ formatearFecha(e.fechaInicio) }}</td>
                     <td>{{ e.ciudad }}, {{ e.provincia }}</td>
                     <td>{{ e.ticketsVendidos }} / {{ e.ticketsTotales }}</td>
@@ -49,9 +70,30 @@
                                 class="btn btn-sm btn-outline-danger" v-on:click="eliminar(e.id)">Cancelar</button>
                     </td>
                 </tr>
+                <tr v-if="eventos.length === 0">
+                    <td colspan="10" class="text-center text-white-50 py-4">
+                        {{ busqueda ? 'No se encontraron eventos para esa búsqueda.' : 'No hay eventos para mostrar.' }}
+                    </td>
+                </tr>
             </tbody>
         </table>
     </div>
+
+    <nav v-if="totalPaginas > 1" class="mt-4" aria-label="Páginas de eventos">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" :class="{ disabled: pagina <= 1 }">
+                <button class="page-link bg-dark text-light border-secondary" type="button"
+                        v-on:click="cambiarPagina(pagina - 1)" :disabled="pagina <= 1">Anterior</button>
+            </li>
+            <li class="page-item disabled">
+                <span class="page-link bg-dark text-light border-secondary">{{ pagina }} / {{ totalPaginas }}</span>
+            </li>
+            <li class="page-item" :class="{ disabled: pagina >= totalPaginas }">
+                <button class="page-link bg-dark text-light border-secondary" type="button"
+                        v-on:click="cambiarPagina(pagina + 1)" :disabled="pagina >= totalPaginas">Siguiente</button>
+            </li>
+        </ul>
+    </nav>
 
     <!-- Modal -->
     <div v-if="modalAbierto" class="modal d-block" style="background:rgba(0,0,0,.7)" v-on:click.self="cerrarModal">
@@ -148,8 +190,17 @@
                     error: false,
                     form: {},
                     archivo: null,
-                    pagina: 1
+                    pagina: 1,
+                    totalCount: 0,
+                    pageSize: 10,
+                    busqueda: '',
+                    busquedaTimer: null
                 };
+            },
+            computed: {
+                totalPaginas() {
+                    return Math.ceil(this.totalCount / this.pageSize);
+                }
             },
             mounted() {
                 this.cargar();
@@ -168,9 +219,25 @@
                         default: return 'badge bg-secondary';
                     }
                 },
+                buscar() {
+                    clearTimeout(this.busquedaTimer);
+                    this.busquedaTimer = setTimeout(() => {
+                        this.pagina = 1;
+                        this.cargar();
+                    }, 300);
+                },
+                cambiarPagina(pagina) {
+                    if (pagina < 1 || pagina > this.totalPaginas) return;
+                    this.pagina = pagina;
+                    this.cargar();
+                },
                 async cargar() {
                     this.cargando = true;
-                    const res = await fetch(`/api/eventos?pagina=${this.pagina}`);
+                    const query = new URLSearchParams({
+                        pagina: this.pagina,
+                        busqueda: this.busqueda.trim()
+                    });
+                    const res = await fetch(`/api/eventos?${query.toString()}`);
                     if (!res.ok) {
                         this.mostrarMensaje('Error al cargar eventos', true);
                         this.cargando = false;
@@ -178,6 +245,8 @@
                     }
                     const data = await res.json();
                     this.eventos = data.items;
+                    this.totalCount = data.totalCount;
+                    this.pageSize = data.pageSize;
                     this.cargando = false;
                 },
                 abrirCrear() {
