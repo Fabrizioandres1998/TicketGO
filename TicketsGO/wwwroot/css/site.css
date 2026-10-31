@@ -25,11 +25,11 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6,
-.ticketgo-brand {
+.ticketsgo-brand {
   font-family: 'Space Grotesk', 'DM Sans', sans-serif;
 }
 
-.ticketgo-navbar {
+.ticketsgo-navbar {
   min-height: 72px;
   padding: 0.65rem 0;
   background: linear-gradient(105deg, #090d18 0%, #101827 60%, #111c2b 100%);
@@ -38,7 +38,7 @@ h1, h2, h3, h4, h5, h6,
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.24);
 }
 
-.ticketgo-brand {
+.ticketsgo-brand {
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
@@ -49,7 +49,7 @@ h1, h2, h3, h4, h5, h6,
   letter-spacing: -0.045em;
 }
 
-.ticketgo-brand-mark {
+.ticketsgo-brand-mark {
   display: grid;
   width: 34px;
   height: 34px;
@@ -62,14 +62,14 @@ h1, h2, h3, h4, h5, h6,
   box-shadow: 0 5px 18px rgba(57, 199, 177, 0.2);
 }
 
-.ticketgo-navbar .ticketgo-nav-link,
-.ticketgo-profile-link,
-.ticketgo-icon-link {
+.ticketsgo-navbar .ticketsgo-nav-link,
+.ticketsgo-profile-link,
+.ticketsgo-icon-link {
   color: #c5cedb !important;
   transition: color 140ms ease, background-color 140ms ease, transform 140ms ease;
 }
 
-.ticketgo-navbar .ticketgo-nav-link {
+.ticketsgo-navbar .ticketsgo-nav-link {
   padding: 0.62rem 0.78rem !important;
   border-radius: 10px;
   font-size: 0.91rem;
@@ -77,14 +77,14 @@ h1, h2, h3, h4, h5, h6,
   white-space: nowrap;
 }
 
-.ticketgo-navbar .ticketgo-nav-link:hover,
-.ticketgo-profile-link:hover,
-.ticketgo-icon-link:hover {
+.ticketsgo-navbar .ticketsgo-nav-link:hover,
+.ticketsgo-profile-link:hover,
+.ticketsgo-icon-link:hover {
   color: #fff !important;
   background: rgba(148, 163, 184, 0.12);
 }
 
-.ticketgo-icon-link {
+.ticketsgo-icon-link {
   position: relative;
   display: grid;
   width: 42px;
@@ -93,8 +93,8 @@ h1, h2, h3, h4, h5, h6,
   border-radius: 13px;
 }
 
-.ticketgo-bell,
-.ticketgo-logout svg {
+.ticketsgo-bell,
+.ticketsgo-logout svg {
   width: 21px;
   height: 21px;
   fill: none;
@@ -104,7 +104,7 @@ h1, h2, h3, h4, h5, h6,
   stroke-linejoin: round;
 }
 
-.ticketgo-notification-count {
+.ticketsgo-notification-count {
   position: absolute;
   top: 0;
   right: -2px;
@@ -122,7 +122,7 @@ h1, h2, h3, h4, h5, h6,
   line-height: 1;
 }
 
-.ticketgo-profile-link {
+.ticketsgo-profile-link {
   display: inline-flex !important;
   align-items: center;
   gap: 0.55rem;
@@ -131,7 +131,7 @@ h1, h2, h3, h4, h5, h6,
   border-radius: 13px;
 }
 
-.ticketgo-avatar {
+.ticketsgo-avatar {
   display: inline-grid;
   width: 34px;
   height: 34px;
@@ -142,12 +142,12 @@ h1, h2, h3, h4, h5, h6,
   object-fit: cover;
 }
 
-.ticketgo-avatar-fallback {
+.ticketsgo-avatar-fallback {
   color: #9fead9;
   background: #1c2a38;
 }
 
-.ticketgo-avatar-fallback svg {
+.ticketsgo-avatar-fallback svg {
   width: 19px;
   height: 19px;
   fill: none;
@@ -157,7 +157,7 @@ h1, h2, h3, h4, h5, h6,
   stroke-linejoin: round;
 }
 
-.ticketgo-profile-name {
+.ticketsgo-profile-name {
   overflow: hidden;
   color: #f1f5f9;
   font-size: 0.9rem;
@@ -166,7 +166,7 @@ h1, h2, h3, h4, h5, h6,
   white-space: nowrap;
 }
 
-.ticketgo-logout {
+.ticketsgo-logout {
   display: inline-flex !important;
   align-items: center;
   gap: 0.45rem;
@@ -174,7 +174,7 @@ h1, h2, h3, h4, h5, h6,
   background: transparent;
 }
 
-.ticketgo-register-link {
+.ticketsgo-register-link {
   padding: 0.58rem 0.95rem !important;
   border: 1px solid rgba(101, 224, 196, 0.48);
   border-radius: 11px;
@@ -183,37 +183,37 @@ h1, h2, h3, h4, h5, h6,
   font-weight: 600;
 }
 
-.ticketgo-register-link:hover {
+.ticketsgo-register-link:hover {
   color: #071019 !important;
   background: #65e0c4;
 }
 
 @media (max-width: 991.98px) {
-  .ticketgo-navbar {
+  .ticketsgo-navbar {
     border-radius: 0 0 14px 14px;
   }
 
-  .ticketgo-navbar .navbar-collapse {
+  .ticketsgo-navbar .navbar-collapse {
     padding-top: 0.85rem;
   }
 
-  .ticketgo-profile-link {
+  .ticketsgo-profile-link {
     max-width: 100%;
   }
 
-  .ticketgo-icon-link {
+  .ticketsgo-icon-link {
     margin-left: -0.6rem;
   }
 }
 
 :root {
-  --ticketgo-bg: #0a0f18;
-  --ticketgo-surface: #101827;
-  --ticketgo-surface-raised: #151f30;
-  --ticketgo-border: rgba(148, 163, 184, 0.2);
-  --ticketgo-muted: #9aa8ba;
-  --ticketgo-accent: #65e0c4;
-  --ticketgo-accent-strong: #39c7b1;
+  --ticketsgo-bg: #0a0f18;
+  --ticketsgo-surface: #101827;
+  --ticketsgo-surface-raised: #151f30;
+  --ticketsgo-border: rgba(148, 163, 184, 0.2);
+  --ticketsgo-muted: #9aa8ba;
+  --ticketsgo-accent: #65e0c4;
+  --ticketsgo-accent-strong: #39c7b1;
 }
 
 body {
@@ -221,7 +221,7 @@ body {
   background:
     radial-gradient(ellipse at 12% 0%, rgba(34, 83, 94, 0.16), transparent 36rem),
     radial-gradient(ellipse at 92% 16%, rgba(47, 66, 104, 0.13), transparent 34rem),
-    var(--ticketgo-bg) !important;
+    var(--ticketsgo-bg) !important;
 }
 
 main {
@@ -229,7 +229,7 @@ main {
 }
 
 .bg-dark {
-  background-color: var(--ticketgo-surface) !important;
+  background-color: var(--ticketsgo-surface) !important;
 }
 
 .bg-black {
@@ -238,7 +238,7 @@ main {
 
 .card {
   color: #edf3f8;
-  border-color: var(--ticketgo-border) !important;
+  border-color: var(--ticketsgo-border) !important;
   border-radius: 1.2rem;
   box-shadow: 0 18px 44px rgba(0, 0, 0, 0.22) !important;
 }
@@ -248,13 +248,13 @@ main {
 }
 
 .border-secondary {
-  border-color: var(--ticketgo-border) !important;
+  border-color: var(--ticketsgo-border) !important;
 }
 
 .text-secondary,
 .text-white-50,
 .text-muted {
-  color: var(--ticketgo-muted) !important;
+  color: var(--ticketsgo-muted) !important;
 }
 
 a:not(.btn):not(.navbar-brand):not(.nav-link) {
@@ -288,7 +288,7 @@ a:not(.btn):not(.navbar-brand):not(.nav-link):hover {
 
 .btn-success {
   color: #071019;
-  border-color: var(--ticketgo-accent);
+  border-color: var(--ticketsgo-accent);
   background: linear-gradient(135deg, #79ead0, #4fd2b8);
 }
 
@@ -300,14 +300,14 @@ a:not(.btn):not(.navbar-brand):not(.nav-link):hover {
 }
 
 .btn-outline-success {
-  color: var(--ticketgo-accent);
+  color: var(--ticketsgo-accent);
   border-color: rgba(101, 224, 196, 0.58);
 }
 
 .btn-outline-success:hover {
   color: #071019;
-  border-color: var(--ticketgo-accent);
-  background: var(--ticketgo-accent);
+  border-color: var(--ticketsgo-accent);
+  background: var(--ticketsgo-accent);
 }
 
 .btn-primary {
@@ -350,7 +350,7 @@ a:not(.btn):not(.navbar-brand):not(.nav-link):hover {
 .form-select,
 .form-check-input {
   color: #edf3f8;
-  border-color: var(--ticketgo-border);
+  border-color: var(--ticketsgo-border);
   border-radius: 0.72rem;
   background-color: #0b121e;
 }
@@ -372,7 +372,7 @@ a:not(.btn):not(.navbar-brand):not(.nav-link):hover {
 }
 
 .form-text {
-  color: var(--ticketgo-muted) !important;
+  color: var(--ticketsgo-muted) !important;
 }
 
 .table-dark {
@@ -397,8 +397,8 @@ a:not(.btn):not(.navbar-brand):not(.nav-link):hover {
 
 .alert-dark {
   color: #dce5ef !important;
-  border-color: var(--ticketgo-border) !important;
-  background-color: var(--ticketgo-surface-raised) !important;
+  border-color: var(--ticketsgo-border) !important;
+  background-color: var(--ticketsgo-surface-raised) !important;
 }
 
 .badge {
@@ -417,12 +417,12 @@ a:not(.btn):not(.navbar-brand):not(.nav-link):hover {
 
 .pagination .page-item.active .page-link {
   color: #071019 !important;
-  border-color: var(--ticketgo-accent) !important;
-  background: var(--ticketgo-accent) !important;
+  border-color: var(--ticketsgo-accent) !important;
+  background: var(--ticketsgo-accent) !important;
 }
 
 .footer {
-  border-color: var(--ticketgo-border) !important;
+  border-color: var(--ticketsgo-border) !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

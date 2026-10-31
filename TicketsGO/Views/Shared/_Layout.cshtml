@@ -17,30 +17,30 @@
 
 <body class="bg-dark text-light">
     <header>
-        <nav class="navbar navbar-expand-lg navbar-dark ticketgo-navbar mb-4">
+        <nav class="navbar navbar-expand-lg navbar-dark ticketsgo-navbar mb-4">
             <div class="container-fluid px-lg-4">
-                <a class="navbar-brand ticketgo-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                    <span class="ticketgo-brand-mark">T</span>TicketGO
+                <a class="navbar-brand ticketsgo-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <span class="ticketsgo-brand-mark">T</span>TicketsGO
                 </a>
-                <button class="navbar-toggler border-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#ticketgoNavbar"
-                        aria-controls="ticketgoNavbar" aria-expanded="false" aria-label="Abrir navegación">
+                <button class="navbar-toggler border-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#ticketsgoNavbar"
+                        aria-controls="ticketsgoNavbar" aria-expanded="false" aria-label="Abrir navegación">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="collapse navbar-collapse" id="ticketgoNavbar">
+                <div class="collapse navbar-collapse" id="ticketsgoNavbar">
                     <ul class="navbar-nav me-auto align-items-lg-center gap-lg-1">
                         @if (User.Identity?.IsAuthenticated == true && (User.IsInRole("Productor") || User.IsInRole("Administrador")))
                         {
-                            <li class="nav-item"><a class="nav-link ticketgo-nav-link" asp-controller="Evento" asp-action="GestionVue">Gestionar eventos</a></li>
+                            <li class="nav-item"><a class="nav-link ticketsgo-nav-link" asp-controller="Evento" asp-action="GestionVue">Gestionar eventos</a></li>
                         }
                         @if (User.Identity?.IsAuthenticated == true && User.IsInRole("Administrador"))
                         {
-                            <li class="nav-item"><a class="nav-link ticketgo-nav-link" asp-controller="Usuario" asp-action="Index">Usuarios</a></li>
+                            <li class="nav-item"><a class="nav-link ticketsgo-nav-link" asp-controller="Usuario" asp-action="Index">Usuarios</a></li>
                         }
                         @if (User.Identity?.IsAuthenticated == true)
                         {
-                            <li class="nav-item"><a class="nav-link ticketgo-nav-link" asp-controller="Compra" asp-action="MisCompras">Mis compras</a></li>
-                            <li class="nav-item"><a class="nav-link ticketgo-nav-link" asp-controller="Ticket" asp-action="MisTickets">Mis tickets</a></li>
-                            <li class="nav-item"><a class="nav-link ticketgo-nav-link" asp-controller="Historial" asp-action="MisMovimientos">Historial</a></li>
+                            <li class="nav-item"><a class="nav-link ticketsgo-nav-link" asp-controller="Compra" asp-action="MisCompras">Mis compras</a></li>
+                            <li class="nav-item"><a class="nav-link ticketsgo-nav-link" asp-controller="Ticket" asp-action="MisTickets">Mis tickets</a></li>
+                            <li class="nav-item"><a class="nav-link ticketsgo-nav-link" asp-controller="Historial" asp-action="MisMovimientos">Historial</a></li>
                         }
                     </ul>
 
@@ -53,36 +53,36 @@
                             var nombreUsuario = User.FindFirst("NombreCompleto")?.Value ?? User.Identity?.Name ?? "Mi cuenta";
 
                             <li class="nav-item">
-                                <a class="nav-link ticketgo-icon-link" asp-controller="Notificaciones" asp-action="Index"
+                                <a class="nav-link ticketsgo-icon-link" asp-controller="Notificaciones" asp-action="Index"
                                    aria-label="Notificaciones" title="Notificaciones">
-                                    <svg viewBox="0 0 24 24" aria-hidden="true" class="ticketgo-bell">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true" class="ticketsgo-bell">
                                         <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4" />
                                     </svg>
                                     @if (notificacionesNoLeidas > 0)
                                     {
-                                        <span class="ticketgo-notification-count">@(notificacionesNoLeidas > 99 ? "99+" : notificacionesNoLeidas.ToString())</span>
+                                        <span class="ticketsgo-notification-count">@(notificacionesNoLeidas > 99 ? "99+" : notificacionesNoLeidas.ToString())</span>
                                     }
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link ticketgo-profile-link" asp-controller="Usuario" asp-action="MyDetails" title="Mi perfil">
+                                <a class="nav-link ticketsgo-profile-link" asp-controller="Usuario" asp-action="MyDetails" title="Mi perfil">
                                     @if (!string.IsNullOrWhiteSpace(avatarUrl))
                                     {
-                                        <img src="@avatarUrl" alt="" class="ticketgo-avatar" />
+                                        <img src="@avatarUrl" alt="" class="ticketsgo-avatar" />
                                     }
                                     else
                                     {
-                                        <span class="ticketgo-avatar ticketgo-avatar-fallback" aria-hidden="true">
+                                        <span class="ticketsgo-avatar ticketsgo-avatar-fallback" aria-hidden="true">
                                             <svg viewBox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z" /></svg>
                                         </span>
                                     }
-                                    <span class="ticketgo-profile-name">@nombreUsuario</span>
+                                    <span class="ticketsgo-profile-name">@nombreUsuario</span>
                                 </a>
                             </li>
                             <li class="nav-item">
                                 <form asp-controller="Usuario" asp-action="Logout" method="post" class="d-inline">
                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="nav-link ticketgo-nav-link ticketgo-logout">
+                                    <button type="submit" class="nav-link ticketsgo-nav-link ticketsgo-logout">
                                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17l5-5-5-5M15 12H3m9-9h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7" /></svg>
                                         <span>Cerrar sesión</span>
                                     </button>
@@ -91,8 +91,8 @@
                         }
                         else
                         {
-                            <li class="nav-item"><a class="nav-link ticketgo-nav-link" asp-controller="Usuario" asp-action="Login">Iniciar sesión</a></li>
-                            <li class="nav-item"><a class="nav-link ticketgo-register-link" asp-controller="Usuario" asp-action="Register">Registrarse</a></li>
+                            <li class="nav-item"><a class="nav-link ticketsgo-nav-link" asp-controller="Usuario" asp-action="Login">Iniciar sesión</a></li>
+                            <li class="nav-item"><a class="nav-link ticketsgo-register-link" asp-controller="Usuario" asp-action="Register">Registrarse</a></li>
                         }
                     </ul>
                 </div>
