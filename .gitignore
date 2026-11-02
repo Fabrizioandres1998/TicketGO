@@ -46,3 +46,9 @@ TestResults/
 # Archivos de respaldo
 *.bak
 *.backup
+
+# Archivos temporales de Draw.io
+*.bkp
+*.dtmp
+*.drawio.bkp
+*.drawio.dtmp
