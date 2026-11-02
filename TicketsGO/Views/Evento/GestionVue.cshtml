@@ -65,9 +65,10 @@
                         <span :class="badgeEstado(e.estado)">{{ e.estado }}</span>
                     </td>
                     <td class="text-end">
+                        <a class="btn btn-sm btn-outline-info" :href="'/Evento/Details/' + e.id">Detalles</a>
                         <button class="btn btn-sm btn-outline-warning" v-on:click="abrirEditar(e.id)">Editar</button>
                         <button v-if="e.estado !== 'Cancelado' && e.estado !== 'Finalizado'"
-                                class="btn btn-sm btn-outline-danger" v-on:click="eliminar(e.id)">Cancelar</button>
+                                class="btn btn-sm btn-outline-danger" v-on:click="abrirConfirmacion(e)">Cancelar</button>
                     </td>
                 </tr>
                 <tr v-if="eventos.length === 0">
@@ -171,6 +172,34 @@
             </div>
         </div>
     </div>
+
+    <div v-if="confirmacionAbierta" class="modal d-block" style="background:rgba(0,0,0,.7)"
+         v-on:click.self="cerrarConfirmacion" role="dialog" aria-modal="true" aria-labelledby="tituloCancelarEvento">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-light border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 id="tituloCancelarEvento" class="modal-title">Cancelar evento</h5>
+                    <button type="button" class="btn-close btn-close-white" v-on:click="cerrarConfirmacion"
+                            :disabled="cancelando" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Querés cancelar <strong>{{ eventoAEliminar ? eventoAEliminar.nombre : '' }}</strong>?</p>
+                    <div class="alert alert-warning mb-0">
+                        El evento dejará de estar publicado y se notificará a las personas que tengan tickets.
+                    </div>
+                    <div v-if="mensajeCancelacion" class="alert alert-danger mt-3 mb-0">{{ mensajeCancelacion }}</div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-outline-light" v-on:click="cerrarConfirmacion"
+                            :disabled="cancelando">Volver</button>
+                    <button type="button" class="btn btn-danger" v-on:click="eliminar(eventoAEliminar.id)"
+                            :disabled="cancelando">
+                        {{ cancelando ? 'Cancelando...' : 'Sí, cancelar evento' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
@@ -184,6 +213,10 @@
                     eventos: [],
                     cargando: true,
                     modalAbierto: false,
+                    confirmacionAbierta: false,
+                    eventoAEliminar: null,
+                    cancelando: false,
+                    mensajeCancelacion: '',
                     editando: false,
                     guardando: false,
                     mensaje: '',
@@ -287,6 +320,17 @@
                     this.archivo = null;
                     this.modalAbierto = true;
                 },
+                abrirConfirmacion(evento) {
+                    this.eventoAEliminar = evento;
+                    this.mensajeCancelacion = '';
+                    this.confirmacionAbierta = true;
+                },
+                cerrarConfirmacion() {
+                    if (this.cancelando) return;
+                    this.confirmacionAbierta = false;
+                    this.eventoAEliminar = null;
+                    this.mensajeCancelacion = '';
+                },
                 cerrarModal() {
                     this.modalAbierto = false;
                 },
@@ -321,18 +365,29 @@
                     this.guardando = false;
                 },
                 async eliminar(id) {
-                    if (!confirm('¿Cancelar este evento?')) return;
-                    const res = await fetch(`/api/eventos/${id}`, { method: 'DELETE' });
-                    if (res.ok) {
+                    if (this.cancelando) return;
+                    this.cancelando = true;
+                    try {
+                        const res = await fetch(`/api/eventos/${id}`, { method: 'DELETE' });
+                        if (!res.ok) {
+                            let msg = 'Error al cancelar el evento.';
+                            try {
+                                const data = await res.json();
+                                msg = data.error || JSON.stringify(data) || msg;
+                            } catch { }
+                            this.mensajeCancelacion = msg;
+                            return;
+                        }
+
+                        this.confirmacionAbierta = false;
+                        this.eventoAEliminar = null;
+                        this.mensajeCancelacion = '';
                         this.mostrarMensaje('Evento cancelado', false);
                         await this.cargar();
-                    } else {
-                        let msg = 'Error al cancelar';
-                        try {
-                            const data = await res.json();
-                            msg = data.error || JSON.stringify(data) || msg;
-                        } catch { }
-                        this.mostrarMensaje(msg, true);
+                    } catch {
+                        this.mensajeCancelacion = 'No se pudo completar la solicitud. Revisá tu conexión e intentá de nuevo.';
+                    } finally {
+                        this.cancelando = false;
                     }
                 },
                 mostrarMensaje(texto, esError) {

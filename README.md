@@ -91,7 +91,7 @@ Las cuentas usan la contraseña `123456`:
 | --- | --- |
 | Usuario | `usuarioprueba@ticketsgo.com` |
 | Usuario | `usuariopruebados@ticketsgo.com` |
-| Administrador | `admintest@ticketsgo.com` |
+| Administrador | `admin@test.com` |
 | Productor | `productorprueba@ticketsgo.com` |
 | Productor | `productorpruebados@ticketsgo.com` |
 
@@ -110,7 +110,7 @@ Content-Type: application/json
 
 ```json
 {
-  "email": "admintest@ticketsgo.com",
+  "email": "admin@test.com",
   "password": "123456"
 }
 ```
@@ -133,17 +133,24 @@ Enviá el valor `accessToken` devuelto en el encabezado `Authorization: Bearer <
 
 | Requisito | Estado | Implementación / evidencia en el repositorio |
 | --- | --- | --- |
-| Modelo relacional con al menos 6 tablas y relaciones | ✅ Implementado: 7 entidades principales; relaciones 1:N y tickets asociados a evento y compra | [`AppDbContext`](TicketsGO/Data/AppDbContext.cs), [diagrama DER](docs/DER.drawio), [modelo de base de datos](docs/base-datos.md) |
+| Modelo relacional con al menos 6 tablas y relaciones | ✅ Implementado: 7 entidades principales; relaciones 1:N y tickets asociados a evento y compra | [`AppDbContext`](TicketsGO/Data/AppDbContext.cs), [captura del DER](docs/DER.drawio.png), [modelo de base de datos](docs/base-datos.md) |
 | Login, logout, roles y funcionalidad restringida por rol | ✅ Implementado | [`UsuarioController`](TicketsGO/Controllers/UsuarioController.cs), [`CompraController`](TicketsGO/Controllers/CompraController.cs), [`EventoController`](TicketsGO/Controllers/EventoController.cs) |
-| Avatar personalizado | ✅ Implementado | [`UsuarioController`](TicketsGO/Controllers/UsuarioController.cs), [`FileService`](TicketsGO/Services/FileService.cs), vistas de perfil en `TicketsGO/Views/Usuario/` |
+| Avatar personalizado | ✅ Implementado | [`UsuarioController`](TicketsGO/Controllers/UsuarioController.cs), [`FileService`](TicketsGO/Services/FileService.cs), [captura del perfil con avatar](docs/avatar.png) |
 | Carga y almacenamiento de archivos adicionales al avatar | ✅ Implementado: imágenes de eventos en `wwwroot/uploads/eventos` | [`FileService`](TicketsGO/Services/FileService.cs), [`EventosApiController`](TicketsGO/Controllers/EventoApiController.cs) |
 | ABM/CRUD con Vue.js y AJAX/JSON | ✅ Implementado para la gestión de eventos (listado, alta, edición y baja) | [Vista Vue de gestión](TicketsGO/Views/Evento/GestionVue.cshtml), [`EventosApiController`](TicketsGO/Controllers/EventoApiController.cs) |
 | Paginación procesada en el servidor | ✅ Implementado en listados principales | [`PaginatedResult`](TicketsGO/Services/PaginatedResult.cs), servicios de eventos, usuarios, compras y tickets; ejemplo: [`EventoService`](TicketsGO/Services/Evento/EventoService.cs) |
 | Búsqueda asíncrona de entidades relacionadas | ✅ Implementado para eventos en compras y usuarios en transferencias | [formulario de compra](TicketsGO/Views/Compra/Create.cshtml), [`UsuariosApiController`](TicketsGO/Controllers/UsuarioApiController.cs), vistas de transferencia en `TicketsGO/Views/Ticket/` |
-| API REST autenticada con JWT | ✅ Implementado; login emite Bearer token y los endpoints protegidos validan autenticación y rol | [`AuthApiController`](TicketsGO/Controllers/AuthApiController.cs), [`EventosApiController`](TicketsGO/Controllers/EventoApiController.cs), configuración en [`Program.cs`](TicketsGO/Program.cs) |
+| API REST autenticada con JWT | ✅ Implementado; login emite Bearer token y los endpoints protegidos validan autenticación y rol | [`AuthApiController`](TicketsGO/Controllers/AuthApiController.cs), [`EventosApiController`](TicketsGO/Controllers/EventoApiController.cs), [captura de Postman con Bearer](<docs/Bearer token - evidencia.png>), configuración en [`Program.cs`](TicketsGO/Program.cs) |
 | `.gitignore` del proyecto | ✅ Incluido | [`.gitignore`](.gitignore) |
 
-Las rutas de código anteriores permiten revisar la implementación. El repositorio no incluye capturas ni GIF de evidencia visual.
+### Videos de demostración
+
+- [Video 1](https://youtu.be/_EkKq1TaqFI)
+- [Video 2](https://youtu.be/eBdiQGq20g8)
+- [Video 3](https://youtu.be/LhFW_2jdOaQ)
+- [Video 4](https://youtu.be/YV8XckN_i_A)
+
+Las capturas disponibles están enlazadas en las filas correspondientes de la matriz. Para los demás requisitos, la matriz incluye enlaces directos a las vistas, controladores y servicios donde se puede revisar la implementación.
 
 ## Documentación
 
