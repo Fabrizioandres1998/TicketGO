@@ -60,7 +60,7 @@ C#, ASP.NET Core MVC (.NET 8), Entity Framework Core, MySQL, Razor, Vue.js, Java
 
    El dump incluye el esquema y datos de ejemplo; al importarlo se reemplazan las tablas con el mismo nombre que ya existan en `TicketsGO`. Como alternativa, se pueden crear las tablas con `dotnet ef database update`.
 
-3. Configurá la conexión local a MySQL con la variable de entorno `ConnectionStrings__DefaultConnection`:
+3. Configurá la conexión local a MySQL en `appsettings.json` con la variable de entorno `ConnectionStrings__DefaultConnection`:
 
    ```bash
    export ConnectionStrings__DefaultConnection='Server=localhost;Port=3306;Database=TicketsGO;User=USUARIO_MYSQL;Password=CONTRASEÑA'
