@@ -1,0 +1,415 @@
+{
+  "info": {
+    "_postman_id": "e6113ba5-b3ba-4ebc-b5ad-397e4e4789a7",
+    "name": "TicketsGO",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "35057199"
+  },
+  "item": [
+    {
+      "name": "Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 200) {\n    const body = pm.response.json();\n    pm.collectionVariables.set(\"token\", body.accessToken);\n    pm.test(\"Login correcto\", function () {\n        pm.response.to.have.status(200);\n    });\n}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@test.com\",\n  \"password\": \"123456\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Me (saber quien logeo con el token)",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/me",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "auth",
+            "me"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Listar eventos",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/eventos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "eventos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Buscar evento por id",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/eventos/5",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "eventos",
+            "5"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Crear evento",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "Nombre",
+              "value": "Recital de Prueba",
+              "type": "text"
+            },
+            {
+              "key": "Descripcion",
+              "value": "Evento de prueba creado desde Postman",
+              "type": "text"
+            },
+            {
+              "key": "FechaInicio",
+              "value": "2027-05-15T21:00",
+              "type": "text"
+            },
+            {
+              "key": "FechaFin",
+              "value": "2027-05-16T01:00:00",
+              "type": "text"
+            },
+            {
+              "key": "Provincia",
+              "value": "San Luis",
+              "type": "text"
+            },
+            {
+              "key": "Ciudad",
+              "value": "Villa Mercedes",
+              "type": "text"
+            },
+            {
+              "key": "Establecimiento",
+              "value": "Teatro",
+              "type": "text"
+            },
+            {
+              "key": "Privado",
+              "value": "false",
+              "type": "text"
+            },
+            {
+              "key": "TicketsTotales",
+              "value": "100",
+              "type": "text"
+            },
+            {
+              "key": "PrecioTicket",
+              "value": "5000",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/eventos",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "eventos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Modificar evento",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "Nombre",
+              "value": "Recital de Prueba",
+              "type": "text"
+            },
+            {
+              "key": "Descripcion",
+              "value": "Evento de prueba creado desde Postman",
+              "type": "text"
+            },
+            {
+              "key": "FechaInicio",
+              "value": "2027-05-15T21:00",
+              "type": "text"
+            },
+            {
+              "key": "FechaFin",
+              "value": "2027-05-16T01:00:00",
+              "type": "text"
+            },
+            {
+              "key": "Provincia",
+              "value": "San Luis",
+              "type": "text"
+            },
+            {
+              "key": "Ciudad",
+              "value": "Villa Mercedes",
+              "type": "text"
+            },
+            {
+              "key": "Establecimiento",
+              "value": "Teatro",
+              "type": "text"
+            },
+            {
+              "key": "Privado",
+              "value": "false",
+              "type": "text"
+            },
+            {
+              "key": "TicketsTotales",
+              "value": "100",
+              "type": "text"
+            },
+            {
+              "key": "PrecioTicket",
+              "value": "5000",
+              "type": "text"
+            },
+            {
+              "key": "Id",
+              "value": "19",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/eventos/19",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "eventos",
+            "19"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/eventos/19",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "eventos",
+            "19"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Listar eventos publico",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/eventos/buscar?nombre=evento",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "eventos",
+            "buscar"
+          ],
+          "query": [
+            {
+              "key": "nombre",
+              "value": "evento"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Buscar por mail",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/usuarios/buscar?email='usuarioprueba@ticketsgo.com'",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "usuarios",
+            "buscar"
+          ],
+          "query": [
+            {
+              "key": "email",
+              "value": "'usuarioprueba@ticketsgo.com'"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": ""
+    },
+    {
+      "key": "token",
+      "value": ""
+    }
+  ]
+}
