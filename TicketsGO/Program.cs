@@ -119,7 +119,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// MIDDLEWARES DE SEGURIDAD (Van siempre antes de los endpoints)
+// MIDDLEWARES DE SEGURIDAD 
 app.UseAuthentication();
 app.UseAuthorization();
 
