@@ -65,6 +65,9 @@ public class TicketService : ITicketService
         if (ticket.Estado == EstadoTicket.Usado)
             throw new InvalidOperationException("No se puede transferir un ticket ya usado.");
 
+        if (ticket.Evento!.Estado != EstadoEvento.Publicado)
+            throw new InvalidOperationException("No se pueden transferir tickets de un evento que no está publicado.");
+
         if (ticket.Evento != null && ticket.Evento.FechaInicio <= DateTime.Now.AddHours(24))
             throw new InvalidOperationException("Solo se puede transferir hasta 24 horas antes del evento.");
 
